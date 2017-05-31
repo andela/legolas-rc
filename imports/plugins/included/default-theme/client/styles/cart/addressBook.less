@@ -13,8 +13,18 @@
       text-decoration: none;
       color: @text-color;
     }
-    a .active {color: @body-bg;}
+    a .active {
+      color: @body-bg;
+      background-color:#3e7293 !important; 
+      }
+    &.active {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #3e7293;
+    border-color: #666666;
+}
   }
+  
 
   .address-icons {
     opacity:0.6;
@@ -121,4 +131,5 @@
   &.danger-action {
     max-height: 44px;
   }
+
 }
