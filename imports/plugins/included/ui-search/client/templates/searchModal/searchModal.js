@@ -56,6 +56,7 @@ Template.searchModal.onCreated(function () {
        */
       if (searchCollection === "products") {
         const productResults = ProductSearch.find().fetch();
+        console.log(productResults);
         const productResultsCount = productResults.length;
         this.state.set("productSearchResults", productResults);
         this.state.set("productSearchCount", productResultsCount);
@@ -176,6 +177,18 @@ Template.searchModal.events({
     $(event.target).toggleClass("active-tag btn-active");
 
     templateInstance.state.set("facets", facets);
+  },
+  "click [data-event-action=searchFilter]": function (event, templateInstance) {
+    event.preventDefault();
+    const products = ProductSearch.find().fetch();
+    templateInstance.state.set("productSearchResults", products);
+    const ProductArray = templateInstance.state.get("productSearchResults");
+    console.log("=========", ProductArray);
+    const filterByMin = templateInstance.find("#min-price-input").value;
+    const filterByMax = templateInstance.find("#max-price-input").value;
+    console.log("clicked the filter button", filterByMin, filterByMax);
+    const searchQuery = templateInstance.find("#search-input").value;
+    console.log("search query", searchQuery);
   },
   "click [data-event-action=productClick]": function () {
     const instance = Template.instance();
