@@ -186,6 +186,21 @@ Template.searchModal.events({
     console.log("=========", ProductArray);
     const filterByMin = templateInstance.find("#min-price-input").value;
     const filterByMax = templateInstance.find("#max-price-input").value;
+    const fiterResult = ProductArray.filter(function (product) {
+      console.log("product", product);
+      return filterByMin <= product.price.min && filterByMax >= product.price.min ||
+          filterByMin <= product.price.max && filterByMax >= product.price.max;
+      // if (filterByMax > filterByMin) {
+      //   if (filterByMin <= product.price.min && filterByMax >= product.price.min ||
+      //     filterByMin <= product.price.max && filterByMax >= product.price.max) {
+      //     console.log("filterByMin is lower than min price and filterByMax is greater");
+      //   } else {
+      //     console.log("the condition was not met");
+      //   }
+      // }
+    });
+    templateInstance.state.set("productSearchResults", fiterResult);
+
     console.log("clicked the filter button", filterByMin, filterByMax);
     const searchQuery = templateInstance.find("#search-input").value;
     console.log("search query", searchQuery);
