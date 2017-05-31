@@ -4,6 +4,7 @@ import "./templates/searchModal/searchModal.js";
 import "./templates/searchModal/searchInput.html";
 import "./templates/searchModal/searchTypeToggle.html";
 import "./templates/searchModal/searchResults.html";
+import "./templates/searchModal/searchInput.js";
 
 // Product Search
 import "./templates/productSearch/productResults.html";
