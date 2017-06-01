@@ -43,7 +43,6 @@ Template.searchModal.onCreated(function () {
     }
   });
 
-
   this.autorun(() => {
     const searchCollection = this.state.get("searchCollection") || "products";
     const searchQuery = this.state.get("searchQuery");
@@ -56,10 +55,15 @@ Template.searchModal.onCreated(function () {
        */
       if (searchCollection === "products") {
         const productResults = ProductSearch.find().fetch();
-        console.log(productResults);
         const productResultsCount = productResults.length;
         this.state.set("productSearchResults", productResults);
         this.state.set("productSearchCount", productResultsCount);
+
+        if ((productResults.length > 0) && (searchQuery.length > 0)) {
+          Session.set("foundSearchResult", true);
+        } else {
+          Session.set("foundSearchResult", false);
+        }
 
         const hashtags = [];
         for (const product of productResults) {
@@ -148,6 +152,15 @@ Template.searchModal.helpers({
   },
   showSearchResults() {
     return false;
+  },
+  foundSearchResult() {
+    return Session.get("foundSearchResult");
+  },
+  negativePrice() {
+    return Session.get("negativePrice");
+  },
+  maxPriceGreater() {
+    return Session.get("maxPriceGreater");
   }
 });
 
@@ -156,7 +169,6 @@ Template.searchModal.helpers({
  * searchModal events
  */
 Template.searchModal.events({
-  // on type, reload Reaction.SaerchResults
   "keyup input": (event, templateInstance) => {
     event.preventDefault();
     const searchQuery = templateInstance.find("#search-input").value;
@@ -179,31 +191,29 @@ Template.searchModal.events({
     templateInstance.state.set("facets", facets);
   },
   "click [data-event-action=searchFilter]": function (event, templateInstance) {
+    Session.set("maxPriceGreater", false);
+    Session.set("negativePrice", false);
+
     event.preventDefault();
     const products = ProductSearch.find().fetch();
     templateInstance.state.set("productSearchResults", products);
     const ProductArray = templateInstance.state.get("productSearchResults");
-    console.log("=========", ProductArray);
-    const filterByMin = templateInstance.find("#min-price-input").value;
-    const filterByMax = templateInstance.find("#max-price-input").value;
-    const fiterResult = ProductArray.filter(function (product) {
-      console.log("product", product);
-      return filterByMin <= product.price.min && filterByMax >= product.price.min ||
-          filterByMin <= product.price.max && filterByMax >= product.price.max;
-      // if (filterByMax > filterByMin) {
-      //   if (filterByMin <= product.price.min && filterByMax >= product.price.min ||
-      //     filterByMin <= product.price.max && filterByMax >= product.price.max) {
-      //     console.log("filterByMin is lower than min price and filterByMax is greater");
-      //   } else {
-      //     console.log("the condition was not met");
-      //   }
-      // }
-    });
-    templateInstance.state.set("productSearchResults", fiterResult);
+    const filterByMin = parseInt(templateInstance.find("#min-price-input").value);
+    const filterByMax = parseInt(templateInstance.find("#max-price-input").value);
 
-    console.log("clicked the filter button", filterByMin, filterByMax);
-    const searchQuery = templateInstance.find("#search-input").value;
-    console.log("search query", searchQuery);
+    if (filterByMin > filterByMax) {
+      Session.set("maxPriceGreater", true);
+      // console.log("min price must be less than max price");
+    } else if ((filterByMin < 0) || (filterByMax < 0)) {
+      Session.set("negativePrice", true);
+      // console.log("negative numbers not allowed");
+    } else if ((filterByMin <= filterByMax) && (filterByMin > 0 || filterByMax > 0)) {
+      const filterResult = ProductArray.filter(function (product) {
+        return filterByMin <= product.price.min && filterByMax >= product.price.min ||
+            filterByMin <= product.price.max && filterByMax >= product.price.max;
+      });
+      templateInstance.state.set("productSearchResults", filterResult);
+    }
   },
   "click [data-event-action=productClick]": function () {
     const instance = Template.instance();
