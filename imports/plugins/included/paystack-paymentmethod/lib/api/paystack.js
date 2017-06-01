@@ -1,17 +1,23 @@
-import { Packages } from "/lib/collections";
+import request from "request";
 
-export const Paystack = {
-  accountOptions: function () {
-    const settings = Packages.findOne({
-      name: "reaction-paymentmethod"
-    }).settings;
-    if (!settings.apiKey) {
-      throw new Meteor.Error("403", "Invalid Credentials");
+export const Paystack = {};
+
+const paystackHeaders = (secret) => {
+  return {
+    "Authorization": `Bearer ${secret}`,
+    "Content-Type": "application/json"
+  };
+};
+
+Paystack.verify = (reference, secret, cb) => {
+  const headers = paystackHeaders(secret);
+  const url = `https://api.paystack.co/transaction/verify/${reference}`;
+  request.get(url, { headers }, (err, response, body) =>  {
+    const res = JSON.parse(body);
+    if (res.status) {
+      cb(null, res);
+    } else {
+      cb(res, null);
     }
-    return settings.apiKey;
-  },
-
-  authorize: function (cardInfo, paymentInfo, callback) {
-    Meteor.call("paystackSubmit", "authorize", cardInfo, paymentInfo, callback);
-  }
+  });
 };

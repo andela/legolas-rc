@@ -20,7 +20,7 @@ export default function () {
         port: ""
       },
       openexchangerates: {
-        appId: "",
+        appId: "dc5443be5e97468a8488b0825d3894bd",
         refreshPeriod: "every 1 hour"
       },
       paymentMethod: {

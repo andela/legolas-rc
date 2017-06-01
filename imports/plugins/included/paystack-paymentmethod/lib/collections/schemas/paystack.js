@@ -1,15 +1,21 @@
 import { SimpleSchema } from "meteor/aldeed:simple-schema";
 import { PackageConfig } from "/lib/collections/schemas/registry";
 
+
 export const PaystackPackageConfig = new SimpleSchema([
   PackageConfig, {
     "settings.mode": {
       type: Boolean,
       defaultValue: true
     },
-    "settings.apiKey": {
+    "settings.paystack.publicKey": {
       type: String,
-      label: "API Key",
+      label: "Public Key",
+      optional: true
+    },
+    "settings.paystack.secretKey": {
+      type: String,
+      label: "Secret Key",
       optional: true
     }
   }
@@ -20,25 +26,8 @@ export const PaystackPayment = new SimpleSchema({
     type: String,
     label: "Cardholder name"
   },
-  cardNumber: {
+  payerEmail: {
     type: String,
-    min: 13,
-    max: 16,
-    label: "Card number"
-  },
-  expireMonth: {
-    type: String,
-    max: 2,
-    label: "Expiration month"
-  },
-  expireYear: {
-    type: String,
-    max: 4,
-    label: "Expiration year"
-  },
-  cvv: {
-    type: String,
-    max: 4,
-    label: "CVV"
+    label: "Email"
   }
 });

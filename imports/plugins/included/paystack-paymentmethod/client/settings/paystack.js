@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { Template } from "meteor/templating";
 import { Reaction } from "/client/api";
 import { Packages } from "/lib/collections";
@@ -12,7 +13,7 @@ Template.paystackSettings.helpers({
   },
   packageData() {
     return Packages.findOne({
-      name: "paystack-paymentmethod",
+      name: "paystack",
       shopId: Reaction.getShopId()
     });
   }
@@ -22,7 +23,7 @@ Template.paystackSettings.helpers({
 Template.paystack.helpers({
   packageData: function () {
     return Packages.findOne({
-      name: "paystack-paymentmethod",
+      name: "paystack",
       shopId: Reaction.getShopId()
     });
   }
