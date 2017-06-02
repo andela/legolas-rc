@@ -10,7 +10,9 @@ import "../../lib/api/paystackApi";
 import { Reaction } from "/client/api";
 import { Shops } from "/lib/collections";
 
-
+if (localStorage.getItem("currency") !== "NGN") {
+  localStorage.setItem("currency", "NGN");
+}
 const findCurrency = (defaultCurrency, useDefaultShopCurrency) => {
   const shop = Shops.findOne(Reaction.getShopId(), {
     fields: {
@@ -64,10 +66,9 @@ AutoForm.addHooks("paystack-payment-form", {
     Meteor.call("paystack/getKeys", (err, keys) => {
       const cart = Cart.findOne();
       const currency = findCurrency("USD");
-      const amount = 10000;
-      // Math.round(currency.exchangeRate * cart.cartTotal()) * 100;
+      const amount = Math.round(currency.exchangeRate * cart.cartTotal()) * 100;
       const template = this.template;
-      const key = keys.public || "pk_test_e0aa5271c1a6ee10b69f3b524e5610a1a3937381";
+      const key = keys.public || "pk_test_0c613403a8f83ef2f7ea900b5251be2bf480ad2f";
       const details = {
         key,
         name: doc.payerName,
@@ -75,7 +76,7 @@ AutoForm.addHooks("paystack-payment-form", {
         reference: Random.id(),
         amount,
         callback(response) {
-          const secret = keys.secret || "sk_test_a589a07a61fd393b0f03490b01d8b789a481c677";
+          const secret = keys.secret || "sk_test_8782ef1ae2f57fad588b342f5429ee9c54a9de88";
           const reference = response.reference;
           if (reference) {
             Paystack.verify(reference, secret, (error, res) => {
