@@ -1,10 +1,7 @@
 import _ from "lodash";
-import React from "react";
-import { DataType } from "react-taco-table";
 import { Template } from "meteor/templating";
-import { i18next } from "/client/api";
 import { ProductSearch, Tags, OrderSearch, AccountSearch } from "/lib/collections";
-import { IconButton, SortableTable } from "/imports/plugins/core/ui/client/components";
+import { IconButton } from "/imports/plugins/core/ui/client/components";
 
 /*
  * searchModal extra functions
@@ -14,6 +11,60 @@ function tagToggle(arr, val) {
     arr.push(val);
   }
   return arr;
+}
+
+/*
+ * sortByPrice
+ */
+function sortByPrice(product, reverse) {
+  // assume that reverse is false
+  let reverseValue = 1;
+
+  // if reverse is true, assign as -1
+  if (reverse) {
+    reverseValue = -1;
+  }
+
+  // sort the product
+  product.sort((currentProduct, nextProduct) => {
+    let currentPrice = 0;
+    let nextPrice = 0;
+    if (currentProduct.price !== null) {
+      currentPrice = currentProduct.price.min;
+    }
+
+    if (nextProduct.price !== null) {
+      nextPrice = nextProduct.price.min;
+    }
+
+    if (currentPrice < nextPrice) return (reverseValue * -1);
+    if (currentPrice > nextPrice) return reverseValue;
+    return 0;
+  });
+
+  return product;
+}
+
+/*
+ * sortByAlphabet
+ */
+function sortByAlphabet(product, reverse) {
+  // assume that reverse is false
+  let reverseValue = 1;
+
+  // if reverse is true, assign as -1
+  if (reverse) {
+    reverseValue = -1;
+  }
+
+  // sort the product
+  product.sort((currentProduct, nextProduct) => {
+    if (currentProduct.title.toLowerCase() < nextProduct.title.toLowerCase()) return  (reverseValue * -1);
+    if (currentProduct.title.toLowerCase() > nextProduct.title.toLowerCase()) return  reverseValue;
+    return 0;
+  });
+
+  return product;
 }
 
 /*
@@ -200,6 +251,38 @@ Template.searchModal.events({
     $("#search-input").focus();
 
     templateInstance.state.set("searchCollection", searchCollection);
+  },
+  "change [data-event-action=searchSort]": function (event, templateInstance) {
+    event.preventDefault();
+
+    const selectedOption = event.target.value;
+
+    const products = ProductSearch.find().fetch();
+    templateInstance.state.set("productSearchResults", products);
+    const ProductArray = templateInstance.state.get("productSearchResults");
+
+    switch (selectedOption) {
+      case "lowtohigh":
+        sortByPrice(ProductArray, false);
+        break;
+
+      case "hightolow":
+        sortByPrice(ProductArray, true);
+        break;
+
+      case "atoz":
+        sortByAlphabet(ProductArray, false);
+        break;
+
+      case "ztoa":
+        sortByAlphabet(ProductArray, true);
+        break;
+
+      default:
+        break;
+    }
+
+    templateInstance.state.set("productSearchResults", ProductArray);
   }
 });
 
