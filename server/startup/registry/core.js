@@ -20,11 +20,11 @@ export default function () {
         port: ""
       },
       openexchangerates: {
-        appId: "dc5443be5e97468a8488b0825d3894bd",
+        appId: "",
         refreshPeriod: "every 1 hour"
       },
       paymentMethod: {
-        defaultPaymentMethod: ""
+        defaultPaymentMethod: "Paystack"
       }
     },
     layout: [{
