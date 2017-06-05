@@ -3,8 +3,6 @@
   <div class="rui search-modal js-search-modal">
 
     <div class="rui search-modal-close">{{> React IconButtonComponent}}</div>
-      
-      {{> searchSort }}
 
     <div class="rui search-modal-header">
 
@@ -13,14 +11,12 @@
       {{> searchTypeToggle }}
 
       {{> productSearchTags tagSearchResults=tagSearchResults }}
-
+      
+      {{> filterInput }}
     </div>
 
     {{#if foundSearchResult}}
-    <br />
-    <br />
     <div class="rui modal-header">
-      {{> filterInput }}
       
       {{#if maxPriceGreater}}
       <span class="error-message">Minimum price must be less than maxmimum price</span>
