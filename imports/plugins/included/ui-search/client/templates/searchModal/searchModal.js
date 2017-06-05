@@ -80,7 +80,7 @@ Template.searchModal.onCreated(function () {
     productSearchResults: [],
     tagSearchResults: []
   });
-
+  const vendorChoice = Session.get("vendorChoice");
 
   // Allow modal to be closed by clicking ESC
   // Must be done in Template.searchModal.onCreated and not in Template.searchModal.events
@@ -94,7 +94,6 @@ Template.searchModal.onCreated(function () {
     }
   });
 
-
   this.autorun(() => {
     const searchCollection = this.state.get("searchCollection") || "products";
     const searchQuery = this.state.get("searchQuery");
@@ -106,10 +105,33 @@ Template.searchModal.onCreated(function () {
        * Product Search
        */
       if (searchCollection === "products") {
-        const productResults = ProductSearch.find().fetch();
+        let productResults = ProductSearch.find().fetch();
         const productResultsCount = productResults.length;
         this.state.set("productSearchResults", productResults);
         this.state.set("productSearchCount", productResultsCount);
+
+        if ((productResults.length > 0) && (searchQuery.length > 0)) {
+          Session.set("foundSearchResult", true);
+        } else {
+          Session.set("foundSearchResult", false);
+        }
+
+        // get all vendors for products in search result
+        let vendors = productResults.map((product) => {
+          return product.vendor;
+        });
+        // if vendor is null, remove it
+        vendors = vendors.filter((vendor) => {
+          return vendor;
+        });
+        const productVendors = [...new Set(vendors)];
+        Session.set("vendors", productVendors);
+
+        if (vendorChoice !== "allVendors") {
+          productResults = productResults.filter((product) => {
+            return product.vendor === vendorChoice;
+          });
+        }
 
         const hashtags = [];
         for (const product of productResults) {
@@ -186,6 +208,7 @@ Template.searchModal.helpers({
       }
     };
   },
+
   productSearchResults() {
     const instance = Template.instance();
     const results = instance.state.get("productSearchResults");
@@ -198,17 +221,32 @@ Template.searchModal.helpers({
   },
   showSearchResults() {
     return false;
+  },
+  foundSearchResult() {
+    return Session.get("foundSearchResult");
+  },
+  negativePrice() {
+    return Session.get("negativePrice");
+  },
+  maxPriceGreater() {
+    return Session.get("maxPriceGreater");
   }
 });
 
+Template.filterInput.helpers({
+  getProductVendors() {
+    return Session.get("vendors");
+  }
+});
 
 /*
  * searchModal events
  */
 Template.searchModal.events({
-  // on type, reload Reaction.SaerchResults
   "keyup input": (event, templateInstance) => {
     event.preventDefault();
+    // initialize vendorChoice to allVendors
+    Session.set("vendorChoice", "allVendors");
     const searchQuery = templateInstance.find("#search-input").value;
     templateInstance.state.set("searchQuery", searchQuery);
     $(".search-modal-header:not(.active-search)").addClass(".active-search");
@@ -227,6 +265,52 @@ Template.searchModal.events({
     $(event.target).toggleClass("active-tag btn-active");
 
     templateInstance.state.set("facets", facets);
+  },
+  "change [data-event-action=vendorFilter]": function (event, templateInstance) {
+    event.preventDefault();
+
+    const selectedOption = event.target.value;
+
+    const products = ProductSearch.find().fetch();
+    templateInstance.state.set("productSearchResults", products);
+    const ProductArray = templateInstance.state.get("productSearchResults");
+
+    if (selectedOption === "__default__") {
+      templateInstance.state.set("productSearchResults", ProductArray);
+    } else {
+      const filterResult = ProductArray.filter(function (product) {
+        return selectedOption === product.vendor;
+      });
+
+      templateInstance.state.set("productSearchResults", filterResult);
+    }
+  },
+  "click [data-event-action=searchFilter]": function (event, templateInstance) {
+    Session.set("maxPriceGreater", false);
+    Session.set("negativePrice", false);
+
+    event.preventDefault();
+    const products = ProductSearch.find().fetch();
+    templateInstance.state.set("productSearchResults", products);
+    const ProductArray = templateInstance.state.get("productSearchResults");
+    const filterByMin = parseInt(templateInstance.find("#min-price-input").value);
+    const filterByMax = parseInt(templateInstance.find("#max-price-input").value);
+
+    if ((isNaN(filterByMin)) || (isNaN(filterByMax))) {
+      Session.set("negativePrice", true);
+    } else {
+      if (filterByMin > filterByMax) {
+        Session.set("maxPriceGreater", true);
+      } else if ((filterByMin < 0) || (filterByMax < 0)) {
+        Session.set("negativePrice", true);
+      } else if ((filterByMin <= filterByMax) && (filterByMin > 0 || filterByMax > 0)) {
+        const filterResult = ProductArray.filter(function (product) {
+          return filterByMin <= product.price.min && filterByMax >= product.price.min ||
+              filterByMin <= product.price.max && filterByMax >= product.price.max;
+        });
+        templateInstance.state.set("productSearchResults", filterResult);
+      }
+    }
   },
   "click [data-event-action=productClick]": function () {
     const instance = Template.instance();
@@ -291,6 +375,7 @@ Template.searchModal.events({
  * searchModal onDestroyed
  */
 Template.searchModal.onDestroyed(() => {
-  // Kill Allow modal to be closed by clicking ESC, which was initiated in Template.searchModal.onCreated
+  // Kill Allow modal to be closed by clicking ESC, which was initiated in
+  // Template.searchModal.onCreated
   $(document).off("keyup");
 });
