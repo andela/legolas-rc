@@ -1,15 +1,11 @@
 <template name="filterInput">
   <div class="rui">
-    <!--<label for="filter-input" data-i18n="search.searchInputLabel">Search {{siteName}}</label>-->
-    <!--<i class="fa fa-search search-icon"></i>-->
     <span class="filter-sort" id="price-choice-span">
       Filter by Price:
       <input type="number" id="min-price-input" class="filter-sort-input" />
       <input type="number" id="max-price-input"  class="filter-sort-input" />
       <button class="rui button" data-event-action="searchFilter" data-i18n="search.searchFilter">Filter</button>
     </span>
-    <!--<input type="number" id="min-price-input" />
-    <input type="number" id="max-price-input" />-->
 
     <span class="filter-sort" id="vendor-choice-span">
       Filter by vendor:
@@ -21,15 +17,5 @@
       </select>
     </span>
 
-    <!--<span class="filter-sort" id="brand-choice-span">
-      Filter by brand:
-      <select id="brand-choice" class="filter-sort-select">
-        <option value="allBrands"> All Brands </option>
-        {{#each brand in getProductBrands}}
-        <option value={{brand}}>{{brand}}</option>
-        {{/each}}
-      </select>
-    </span>-->
-    <!--<span class="search-clear" data-event-action="filterClear"  data-i18n="search.filterClear">Clear</span>-->
   </div>
 </template>

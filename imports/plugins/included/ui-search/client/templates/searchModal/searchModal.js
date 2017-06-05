@@ -81,7 +81,6 @@ Template.searchModal.onCreated(function () {
             return product.vendor === vendorChoice;
           });
         }
-        console.log("vendors", productVendors);
 
         const hashtags = [];
         for (const product of productResults) {
@@ -158,9 +157,7 @@ Template.searchModal.helpers({
       }
     };
   },
-  // getProductVendors() {
-  //   return Session.get("vendors");
-  // },
+
   productSearchResults() {
     const instance = Template.instance();
     const results = instance.state.get("productSearchResults");
@@ -227,8 +224,6 @@ Template.searchModal.events({
     templateInstance.state.set("productSearchResults", products);
     const ProductArray = templateInstance.state.get("productSearchResults");
 
-    console.log("selectedOption", selectedOption);
-
     if (selectedOption === "__default__") {
       templateInstance.state.set("productSearchResults", ProductArray);
     } else {
@@ -236,35 +231,8 @@ Template.searchModal.events({
         return selectedOption === product.vendor;
       });
 
-      // console.log(filterResult);
-
       templateInstance.state.set("productSearchResults", filterResult);
     }
-
-
-
-    // switch (selectedOption) {
-    //   case "lowtohigh":
-    //     sortByPrice(ProductArray, false);
-    //     break;
-
-    //   case "hightolow":
-    //     sortByPrice(ProductArray, true);
-    //     break;
-
-    //   case "atoz":
-    //     sortByAlphabet(ProductArray, false);
-    //     break;
-
-    //   case "ztoa":
-    //     sortByAlphabet(ProductArray, true);
-    //     break;
-
-    //   default:
-    //     break;
-    // }
-
-    // templateInstance.state.set("productSearchResults", ProductArray);
   },
   "click [data-event-action=searchFilter]": function (event, templateInstance) {
     Session.set("maxPriceGreater", false);
@@ -274,20 +242,16 @@ Template.searchModal.events({
     const products = ProductSearch.find().fetch();
     templateInstance.state.set("productSearchResults", products);
     const ProductArray = templateInstance.state.get("productSearchResults");
-    // console.log("product=====", ProductArray);
     const filterByMin = parseInt(templateInstance.find("#min-price-input").value);
     const filterByMax = parseInt(templateInstance.find("#max-price-input").value);
-    // console.log("min price---", filterByMin, "max price", filterByMax);
 
     if ((isNaN(filterByMin)) || (isNaN(filterByMax))) {
       Session.set("negativePrice", true);
     } else {
       if (filterByMin > filterByMax) {
         Session.set("maxPriceGreater", true);
-        // console.log("min price must be less than max price");
       } else if ((filterByMin < 0) || (filterByMax < 0)) {
         Session.set("negativePrice", true);
-        // console.log("negative numbers not allowed");
       } else if ((filterByMin <= filterByMax) && (filterByMin > 0 || filterByMax > 0)) {
         const filterResult = ProductArray.filter(function (product) {
           return filterByMin <= product.price.min && filterByMax >= product.price.min ||
@@ -328,6 +292,7 @@ Template.searchModal.events({
  * searchModal onDestroyed
  */
 Template.searchModal.onDestroyed(() => {
-  // Kill Allow modal to be closed by clicking ESC, which was initiated in Template.searchModal.onCreated
+  // Kill Allow modal to be closed by clicking ESC, which was initiated in
+  // Template.searchModal.onCreated
   $(document).off("keyup");
 });
