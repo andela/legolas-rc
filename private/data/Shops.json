@@ -244,6 +244,10 @@
       "format": "%s%v",
       "symbol": "£"
     },
+    "NGN": {
+      "format": "%s%v",
+      "symbol": "₦"
+    },
     "GEL": {
       "format": "%v %s",
       "symbol": "GEL"

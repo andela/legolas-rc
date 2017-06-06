@@ -67,8 +67,8 @@ Meteor.methods({
     let clientAddress;
     const geo = new GeoCoder();
     const result = {};
-    let defaultCountryCode = "US";
-    let localeCurrency = "USD";
+    let defaultCountryCode = "NG";
+    let localeCurrency = "NGN";
     // if called from server, ip won't be defined.
     if (this.connection !== null) {
       clientAddress = this.connection.clientAddress;

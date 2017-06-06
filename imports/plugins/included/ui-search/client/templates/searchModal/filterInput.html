@@ -1,0 +1,24 @@
+<template name="filterInput">
+  <br><br>
+  <div class="rui well">
+    <span class="filter-sort" id="price-choice-span">
+      <small>Filter by Price:</small>
+      <input type="number" id="min-price-input" class="filter-sort-input" />
+      <input type="number" id="max-price-input"  class="filter-sort-input" />
+      <button class="rui button" data-event-action="searchFilter" data-i18n="search.searchFilter">Filter</button>
+    </span>
+
+    <span class="filter-sort" id="vendor-choice-span">
+      <small>Filter by vendor:</small>
+      <select id="vendor-choice" data-event-action="vendorFilter" class="filter-sort-select">
+        <option value="__default__"> All Vendors </option>
+        {{#each vendor in getProductVendors}}
+          <option value={{vendor}}>{{vendor}}</option>
+        {{/each}}
+      </select>
+    </span>
+    
+    {{> searchSort }}
+
+  </div>
+</template>

@@ -24,7 +24,7 @@ export default function () {
         refreshPeriod: "every 1 hour"
       },
       paymentMethod: {
-        defaultPaymentMethod: ""
+        defaultPaymentMethod: "Paystack"
       }
     },
     layout: [{

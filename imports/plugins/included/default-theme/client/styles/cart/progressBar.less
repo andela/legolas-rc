@@ -14,7 +14,12 @@
   height: 150px;
   padding: 0 0 20px 0;
 }
-
+  h4#billing-address-label {
+    color: #ed7d1a;
+}
+.address-list-heading {
+    color: #ed7d1a;
+}
 .checkout-progress-bar li {
   .display(flex);
   .flex(1 1 auto);
@@ -54,19 +59,20 @@
     height: 5px;
     background-color: @brand-light-color;
   }
+  
 
   // The different states of progress
   &.visited:before, 
   &.visited:after, 
   &.visited .progress-step-badge {
-    background-color: @checkout-progress-visited;
+    background-color: #ed7d1a;
     color: @checkout-progress-visited-text;
   }
 
   &.active:before, 
   // &.active:after, 
   &.active .progress-step-badge {
-    background-color: @cart-progress-visited;
+    background-color: #ed7d1a;
     color: @checkout-progress-visited-text;
   }
 
