@@ -33,6 +33,7 @@ getResults.products = function (searchTerm, facets, maxResults, userId) {
         title: 1,
         hashtags: 1,
         description: 1,
+        vendor: 1,
         handle: 1,
         price: 1
       },

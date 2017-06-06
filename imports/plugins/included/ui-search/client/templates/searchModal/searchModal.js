@@ -1,10 +1,7 @@
 import _ from "lodash";
-import React from "react";
-import { DataType } from "react-taco-table";
 import { Template } from "meteor/templating";
-import { i18next } from "/client/api";
 import { ProductSearch, Tags, OrderSearch, AccountSearch } from "/lib/collections";
-import { IconButton, SortableTable } from "/imports/plugins/core/ui/client/components";
+import { IconButton } from "/imports/plugins/core/ui/client/components";
 
 /*
  * searchModal extra functions
@@ -14,6 +11,60 @@ function tagToggle(arr, val) {
     arr.push(val);
   }
   return arr;
+}
+
+/*
+ * sortByPrice
+ */
+function sortByPrice(product, reverse) {
+  // assume that reverse is false
+  let reverseValue = 1;
+
+  // if reverse is true, assign as -1
+  if (reverse) {
+    reverseValue = -1;
+  }
+
+  // sort the product
+  product.sort((currentProduct, nextProduct) => {
+    let currentPrice = 0;
+    let nextPrice = 0;
+    if (currentProduct.price !== null) {
+      currentPrice = currentProduct.price.min;
+    }
+
+    if (nextProduct.price !== null) {
+      nextPrice = nextProduct.price.min;
+    }
+
+    if (currentPrice < nextPrice) return (reverseValue * -1);
+    if (currentPrice > nextPrice) return reverseValue;
+    return 0;
+  });
+
+  return product;
+}
+
+/*
+ * sortByAlphabet
+ */
+function sortByAlphabet(product, reverse) {
+  // assume that reverse is false
+  let reverseValue = 1;
+
+  // if reverse is true, assign as -1
+  if (reverse) {
+    reverseValue = -1;
+  }
+
+  // sort the product
+  product.sort((currentProduct, nextProduct) => {
+    if (currentProduct.title.toLowerCase() < nextProduct.title.toLowerCase()) return  (reverseValue * -1);
+    if (currentProduct.title.toLowerCase() > nextProduct.title.toLowerCase()) return  reverseValue;
+    return 0;
+  });
+
+  return product;
 }
 
 /*
@@ -29,7 +80,7 @@ Template.searchModal.onCreated(function () {
     productSearchResults: [],
     tagSearchResults: []
   });
-
+  const vendorChoice = Session.get("vendorChoice");
 
   // Allow modal to be closed by clicking ESC
   // Must be done in Template.searchModal.onCreated and not in Template.searchModal.events
@@ -43,7 +94,6 @@ Template.searchModal.onCreated(function () {
     }
   });
 
-
   this.autorun(() => {
     const searchCollection = this.state.get("searchCollection") || "products";
     const searchQuery = this.state.get("searchQuery");
@@ -55,10 +105,33 @@ Template.searchModal.onCreated(function () {
        * Product Search
        */
       if (searchCollection === "products") {
-        const productResults = ProductSearch.find().fetch();
+        let productResults = ProductSearch.find().fetch();
         const productResultsCount = productResults.length;
         this.state.set("productSearchResults", productResults);
         this.state.set("productSearchCount", productResultsCount);
+
+        if ((productResults.length > 0) && (searchQuery.length > 0)) {
+          Session.set("foundSearchResult", true);
+        } else {
+          Session.set("foundSearchResult", false);
+        }
+
+        // get all vendors for products in search result
+        let vendors = productResults.map((product) => {
+          return product.vendor;
+        });
+        // if vendor is null, remove it
+        vendors = vendors.filter((vendor) => {
+          return vendor;
+        });
+        const productVendors = [...new Set(vendors)];
+        Session.set("vendors", productVendors);
+
+        if (vendorChoice !== "allVendors") {
+          productResults = productResults.filter((product) => {
+            return product.vendor === vendorChoice;
+          });
+        }
 
         const hashtags = [];
         for (const product of productResults) {
@@ -135,6 +208,7 @@ Template.searchModal.helpers({
       }
     };
   },
+
   productSearchResults() {
     const instance = Template.instance();
     const results = instance.state.get("productSearchResults");
@@ -147,17 +221,32 @@ Template.searchModal.helpers({
   },
   showSearchResults() {
     return false;
+  },
+  foundSearchResult() {
+    return Session.get("foundSearchResult");
+  },
+  negativePrice() {
+    return Session.get("negativePrice");
+  },
+  maxPriceGreater() {
+    return Session.get("maxPriceGreater");
   }
 });
 
+Template.filterInput.helpers({
+  getProductVendors() {
+    return Session.get("vendors");
+  }
+});
 
 /*
  * searchModal events
  */
 Template.searchModal.events({
-  // on type, reload Reaction.SaerchResults
   "keyup input": (event, templateInstance) => {
     event.preventDefault();
+    // initialize vendorChoice to allVendors
+    Session.set("vendorChoice", "allVendors");
     const searchQuery = templateInstance.find("#search-input").value;
     templateInstance.state.set("searchQuery", searchQuery);
     $(".search-modal-header:not(.active-search)").addClass(".active-search");
@@ -176,6 +265,52 @@ Template.searchModal.events({
     $(event.target).toggleClass("active-tag btn-active");
 
     templateInstance.state.set("facets", facets);
+  },
+  "change [data-event-action=vendorFilter]": function (event, templateInstance) {
+    event.preventDefault();
+
+    const selectedOption = event.target.value;
+
+    const products = ProductSearch.find().fetch();
+    templateInstance.state.set("productSearchResults", products);
+    const ProductArray = templateInstance.state.get("productSearchResults");
+
+    if (selectedOption === "__default__") {
+      templateInstance.state.set("productSearchResults", ProductArray);
+    } else {
+      const filterResult = ProductArray.filter(function (product) {
+        return selectedOption === product.vendor;
+      });
+
+      templateInstance.state.set("productSearchResults", filterResult);
+    }
+  },
+  "click [data-event-action=searchFilter]": function (event, templateInstance) {
+    Session.set("maxPriceGreater", false);
+    Session.set("negativePrice", false);
+
+    event.preventDefault();
+    const products = ProductSearch.find().fetch();
+    templateInstance.state.set("productSearchResults", products);
+    const ProductArray = templateInstance.state.get("productSearchResults");
+    const filterByMin = parseInt(templateInstance.find("#min-price-input").value);
+    const filterByMax = parseInt(templateInstance.find("#max-price-input").value);
+
+    if ((isNaN(filterByMin)) || (isNaN(filterByMax))) {
+      Session.set("negativePrice", true);
+    } else {
+      if (filterByMin > filterByMax) {
+        Session.set("maxPriceGreater", true);
+      } else if ((filterByMin < 0) || (filterByMax < 0)) {
+        Session.set("negativePrice", true);
+      } else if ((filterByMin <= filterByMax) && (filterByMin > 0 || filterByMax > 0)) {
+        const filterResult = ProductArray.filter(function (product) {
+          return filterByMin <= product.price.min && filterByMax >= product.price.min ||
+              filterByMin <= product.price.max && filterByMax >= product.price.max;
+        });
+        templateInstance.state.set("productSearchResults", filterResult);
+      }
+    }
   },
   "click [data-event-action=productClick]": function () {
     const instance = Template.instance();
@@ -200,6 +335,38 @@ Template.searchModal.events({
     $("#search-input").focus();
 
     templateInstance.state.set("searchCollection", searchCollection);
+  },
+  "change [data-event-action=searchSort]": function (event, templateInstance) {
+    event.preventDefault();
+
+    const selectedOption = event.target.value;
+
+    const products = ProductSearch.find().fetch();
+    templateInstance.state.set("productSearchResults", products);
+    const ProductArray = templateInstance.state.get("productSearchResults");
+
+    switch (selectedOption) {
+      case "lowtohigh":
+        sortByPrice(ProductArray, false);
+        break;
+
+      case "hightolow":
+        sortByPrice(ProductArray, true);
+        break;
+
+      case "atoz":
+        sortByAlphabet(ProductArray, false);
+        break;
+
+      case "ztoa":
+        sortByAlphabet(ProductArray, true);
+        break;
+
+      default:
+        break;
+    }
+
+    templateInstance.state.set("productSearchResults", ProductArray);
   }
 });
 
@@ -208,6 +375,7 @@ Template.searchModal.events({
  * searchModal onDestroyed
  */
 Template.searchModal.onDestroyed(() => {
-  // Kill Allow modal to be closed by clicking ESC, which was initiated in Template.searchModal.onCreated
+  // Kill Allow modal to be closed by clicking ESC, which was initiated in
+  // Template.searchModal.onCreated
   $(document).off("keyup");
 });
