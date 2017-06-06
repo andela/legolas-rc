@@ -20,9 +20,14 @@ describe("simple login test", function () {
     const usrData = yaml.safeLoad(fs.readFileSync("./tests/acceptance-tests/config/user-data.yml", "utf8"));
 
     // default to process env if we've got that
-    const adminEmail = process.env.REACTION_EMAIL || usrData.admin_email;
+    /* const adminEmail = process.env.REACTION_EMAIL || usrData.admin_email;
     const adminPassword = process.env.REACTION_AUTH || usrData.admin_pw;
-    const adminUserName = process.env.REACTION_USER || usrData.admin_user;
+    const adminUserName = process.env.REACTION_USER || usrData.admin_user;*/
+
+    // we don't have that so use user-data
+    const adminEmail = usrData.admin_email;
+    const adminPassword = usrData.admin_pw;
+    const adminUserName = usrData.admin_user;
 
     browser.pause("5000");
     browser.click(eleMap.login_dropdown_btn);
