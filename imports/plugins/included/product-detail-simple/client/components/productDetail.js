@@ -16,8 +16,27 @@ import {
 } from "./";
 import { AlertContainer } from "/imports/plugins/core/ui/client/containers";
 import { PublishContainer } from "/imports/plugins/core/revisions";
+import { Meteor } from "meteor/meteor";
+import * as Collections from "/lib/collections";
 
 class ProductDetail extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showDigital: false,
+      productPaid: ""
+    };
+
+    this.isDigital = this.isDigital.bind(this);
+  }
+  componentWillMount() {
+    if (this.getUserOrders()) {
+      console.log(this.getUserOrders().indexOf(this.product._id));
+      this.setState({ productPaid: this.getUserOrders().indexOf(this.product._id) });
+    }
+  }
+
   get tags() {
     return this.props.tags || [];
   }
@@ -28,6 +47,20 @@ class ProductDetail extends Component {
 
   get editable() {
     return this.props.editable;
+  }
+
+  getUserOrders() {
+    const orderSub = Meteor.subscribe("AccountOrders", Meteor.userId());
+    if (orderSub.ready()) {
+      return Collections.Orders.find({
+        userId: Meteor.userId()
+      }, {
+          sort: {
+            createdAt: -1
+          },
+          limit: 25
+        }).fetch();
+    }
   }
 
   handleVisibilityChange = (event, isProductVisible) => {
@@ -47,7 +80,7 @@ class ProductDetail extends Component {
       return (
         <Toolbar>
           <ToolbarGroup firstChild={true}>
-            <Translation defaultValue="Product Management" i18nKey="productDetail.productManagement"/>
+            <Translation defaultValue="Product Management" i18nKey="productDetail.productManagement" />
           </ToolbarGroup>
           <ToolbarGroup>
             <DropDownMenu
@@ -74,11 +107,29 @@ class ProductDetail extends Component {
     return null;
   }
 
-  render() {
-    return (
-      <div className="" style={{position: "relative"}}>
-        {this.renderToolbar()}
+  isDigital() {
 
+    this.setState({ showDigital: !this.state.showDigital });
+  }
+  productOrder() {
+
+  }
+
+  render() {
+    const user = Meteor.user();
+    const rolesObj = user.roles;
+    const key = Object.keys(rolesObj);
+    console.log('user',user)
+    const roles = rolesObj[key[0]];
+    const isAdmin = roles.indexOf("admin") !== -1;
+    console.log(isAdmin);
+    if (this.getUserOrders()) {
+      console.log(this.getUserOrders().indexOf(this.product._id));
+      //this.setState({productPaid: this.getUserOrders().indexOf(this.product._id) });
+    }
+    return (
+      <div className="" style={{ position: "relative" }}>
+        {this.renderToolbar()}
         <div className="container-main container-fluid pdp-container" itemScope itemType="http://schema.org/Product">
           <AlertContainer placement="productManagement" />
 
@@ -148,7 +199,6 @@ class ProductDetail extends Component {
                   }}
                 />
               </div>
-
               <div className="pdp product-info">
                 <ProductField
                   editable={this.editable}
@@ -163,6 +213,34 @@ class ProductDetail extends Component {
                   }}
                 />
               </div>
+              Check him again
+              {this.props.hasAdminPermission && <div className="digitalProduct">
+                <div className="checkbox">
+                  <h3><input id="digital" type="checkbox" value="" onChange={() => this.isDigital()} />Digital Product</h3>
+                </div>
+              </div>}
+
+              {this.state.showDigital &&
+                <div className="digitalProduct">
+                  <div className="checkbox">
+                    <input type="text" id="url" placeholder="Enter download url" />
+                    <button id="save" className="btn btn-success pull-right">Save</button>
+
+                  </div>
+                </div>
+              }
+              {this.state.productPaid > 0 &&
+                <div>
+                  <a href="http://downloadLink"><h5>Download url: {'downloadLink'}</h5></a>
+                </div>
+              }
+
+
+
+
+
+
+
 
               <div className="options-add-to-cart">
                 {this.props.topVariantComponent}
@@ -203,3 +281,6 @@ ProductDetail.propTypes = {
 };
 
 export default ProductDetail;
+
+
+
