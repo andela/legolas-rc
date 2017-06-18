@@ -47,6 +47,14 @@ export default function () {
       label: "Profile",
       icon: "fa fa-user",
       provides: "userAccountDropdown"
+    },
+    {
+      route: "/wallet",
+      template: "wallet",
+      name: "wallet",
+      label: "wallet",
+      icon: "fa fa-money",
+      provides: "userAccountDropdown"
     }],
     layout: [{
       layout: "coreLayout",
