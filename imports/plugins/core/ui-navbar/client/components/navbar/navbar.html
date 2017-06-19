@@ -6,11 +6,11 @@
     <div class="menu">
       {{> tagNav tagNavProps}}
     </div>
-    
-    <div class="search">{{> React IconButtonComponent}}</div>
-    <div class="languages hidden-xs">{{> i18nChooser}}</div>
-    <div class="accounts">{{> accounts tpl="loginDropdown"}}</div>
-    <div class="cart">{{> cartIcon}}</div>
+    <div id="userTour" class="tour">{{> React TourButtonComponent}}</div>
+    <div id="userTourSearch" class="search">{{> React IconButtonComponent}}</div>
+    <div id="userTourLanguage" class="languages hidden-xs">{{> i18nChooser}}</div>
+    <div id="userTourQuickAccess" class="accounts">{{> accounts tpl="loginDropdown"}}</div>
+    <div id="userTourCart" class="cart">{{> cartIcon}}</div>
     <div class="cart-alert">{{> cartPanel}}</div>
   </div>
 </template>
