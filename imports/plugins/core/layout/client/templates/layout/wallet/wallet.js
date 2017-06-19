@@ -12,7 +12,9 @@ Template.wallet.onCreated(function bodyOnCreated() {
   this.autorun(() => {
     this.subscribe("transactionDetails", Meteor.userId());
     const transactionInfo = Wallets.find().fetch();
-    this.state.set("details", transactionInfo[0]);
+    if (transactionInfo.length > 0) {
+      this.state.set("details", transactionInfo[0]);
+    }
   });
 });
 
@@ -105,6 +107,7 @@ Template.wallet.events({
     const accountDetails = Accounts.find(Meteor.userId()).fetch();
     const userMail = accountDetails[0].emails[0].address;
     const amount = parseInt(document.getElementById("depositAmount").value, 10);
+    console.log(amount);
     const mailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$/i;
     if (!mailRegex.test(userMail)) {
       Alerts.toast("Invalid email address", "error");

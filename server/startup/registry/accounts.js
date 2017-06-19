@@ -53,7 +53,7 @@ export default function () {
       template: "wallet",
       name: "wallet",
       label: "wallet",
-      icon: "fa fa-money",
+      icon: "fa fa-google-wallet",
       provides: "userAccountDropdown"
     }],
     layout: [{
