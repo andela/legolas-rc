@@ -67,15 +67,11 @@ Template.walletPayment.events({
     event.preventDefault();
     const balance = Template.instance().state.get("details").balance;
     const cartAmount = Number(Cart.findOne().cartTotal());
-    console.log(Cart.findOne().cartTotal());
     const currency = Shops.findOne().currency;
-    console.log(currency)
     if (cartAmount > balance) {
       Alerts.toast("Insufficient balance", "error");
       return false;
     }
-    //const currency = Shops.findOne().currency;
-    console.log(currency)
     transactionId = Random.id();
     Meteor.call("wallet/transaction", Meteor.userId(), {
       amount: cartAmount,

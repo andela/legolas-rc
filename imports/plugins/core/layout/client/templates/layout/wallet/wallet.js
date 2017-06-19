@@ -23,7 +23,6 @@ const getPaystackSettings = () => {
     name: "paystack",
     shopId: Reaction.getShopId()
   });
-  console.log(paystack, "PACKAGE");
   return {
     public: paystack.settings.publicKey || "pk_test_0c613403a8f83ef2f7ea900b5251be2bf480ad2f",
     secret: paystack.settings.secretKey || "sk_test_8782ef1ae2f57fad588b342f5429ee9c54a9de88"
@@ -80,8 +79,6 @@ function handlePayment(result) {
           date: new Date(),
           transactionType: "Credit"
         };
-        console.log(paystackMethod.amount, "Before Transaction amount");
-        console.log(paystackMethod.transactions.amount, "Transaction amount");
         finalizeDeposit(paystackMethod);
       }
     }
@@ -91,7 +88,6 @@ function handlePayment(result) {
 // Paystack payment
 const payWithPaystack = (email, amount) => {
   const paystackConfig = getPaystackSettings();
-  console.log("Paystack Config", paystackConfig);
   const handler = PaystackPop.setup({
     key: paystackConfig.public,
     email: email,
@@ -107,7 +103,6 @@ Template.wallet.events({
     const accountDetails = Accounts.find(Meteor.userId()).fetch();
     const userMail = accountDetails[0].emails[0].address;
     const amount = parseInt(document.getElementById("depositAmount").value, 10);
-    console.log(amount);
     const mailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$/i;
     if (!mailRegex.test(userMail)) {
       Alerts.toast("Invalid email address", "error");
@@ -122,10 +117,6 @@ Template.wallet.events({
     const amount = parseInt(document.getElementById("transferAmount").value, 10) / exchangeRate;
     if (amount > Template.instance().state.get("details").balance) {
       Alerts.toast("Insufficient Balance", "error");
-      return false;
-    }
-    if (amount < 0) {
-      Alerts.toast("Amount cannot be negative", "error");
       return false;
     }
     const recipient = document.getElementById("recipient").value;
