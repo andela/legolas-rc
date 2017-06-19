@@ -30,10 +30,10 @@ export default () => {
               hasPermission(this.user, "owner")) {
               const allRecords = collectionName.findOne(this.urlParams.id);
               if (!allRecords) {
-                return { statusCode: 404, status: "fail",
+                return { status: "fail",
                   message: "Record does not exist" };
               }
-              return { statusCode: 200, status: "success", data: allRecords };
+              return { status: "success", data: allRecords };
             }
           }
         },
@@ -45,7 +45,7 @@ export default () => {
               hasPermission(this.user, "owner")) {
               const isInserted = collectionName.insert(this.bodyParams);
               if (isInserted) {
-                return { statusCode: 201, status: "success", data: isInserted };
+                return { status: "success", data: isInserted };
               } return { statusCode: 400, status: "fail",
                 message: "Post was not successful" };
             }
@@ -67,7 +67,7 @@ export default () => {
                   message: "Record does not exist" };
               }
               const record = collectionName.findOne(this.urlParams.id);
-              return { statusCode: 200, status: "success", data: isUpdated, record };
+              return { status: "success", data: isUpdated, record };
             }
             return { statusCode: 403, status: "fail",
               message: "You do not have permission to edit this record" };
