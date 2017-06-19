@@ -16,6 +16,8 @@ import {
 } from "./";
 import { AlertContainer } from "/imports/plugins/core/ui/client/containers";
 import { PublishContainer } from "/imports/plugins/core/revisions";
+import { Accounts } from "/lib/collections";
+import { vendorTour } from "/imports/plugins/included/tour/client/vendorTour";
 
 class ProductDetail extends Component {
   get tags() {
@@ -28,6 +30,18 @@ class ProductDetail extends Component {
 
   get editable() {
     return this.props.editable;
+  }
+  componentDidMount() {
+    const currentUser = Accounts.findOne(Meteor.userId());
+
+    if (Meteor.user().emails.length > 0 && !currentUser.takenVendorTour) {
+      vendorTour();
+      Accounts.update({_id: Meteor.userId()}, {$set: {takenTour: true}});
+    }
+  }
+
+  onTourClick() {
+    vendorTour();
   }
 
   handleVisibilityChange = (event, isProductVisible) => {
@@ -59,6 +73,9 @@ class ProductDetail extends Component {
               <MenuItem label="Customer" value="customer" />
             </DropDownMenu>
           </ToolbarGroup>
+          <button className="btn btn-primary" onClick={this.onTourClick}>
+            Learn to Sell
+          </button>
           <ToolbarGroup lastChild={true}>
             <PublishContainer
               documentIds={[this.product._id]}
