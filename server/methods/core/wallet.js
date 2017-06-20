@@ -12,15 +12,12 @@ Meteor.methods({
   * @return {boolean} true or false if the db operation was successful
   */
   "wallet/transaction": (userId, transactions) => {
-    console.log(transactions);
     check(userId, String);
     check(transactions, Schemas.Transaction);
     let balanceOptions;
     const { amount, transactionType } = transactions;
-    console.log({ amount, transactionType }, "AMOUNT HERE");
     if (transactionType === "Credit") {
       balanceOptions = { balance: amount };
-      console.log(balanceOptions);
     }
     if (transactionType === "Debit") {
       if (transactions.to) {
