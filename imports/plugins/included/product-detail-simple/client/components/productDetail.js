@@ -33,10 +33,13 @@ class ProductDetail extends Component {
   }
   componentDidMount() {
     const currentUser = Accounts.findOne(Meteor.userId());
+    // const currentUser = Accounts.findOne(Meteor.userId());
+    console.log("cur user", currentUser);
+    console.log("cur user", currentUser.takenVendorTour);
 
     if (Meteor.user().emails.length > 0 && !currentUser.takenVendorTour) {
       vendorTour();
-      Accounts.update({_id: Meteor.userId()}, {$set: {takenTour: true}});
+      Accounts.update({_id: Meteor.userId()}, {$set: {takenVendorTour: true}});
     }
   }
 
