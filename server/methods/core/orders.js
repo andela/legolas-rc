@@ -360,8 +360,6 @@ Meteor.methods({
 
           return false;
         });
-        console.log('combined items', combinedItems)
-
         // Increment the quantity count for the duplicate product variants
         if (foundItem) {
           foundItem.quantity++;
@@ -432,7 +430,6 @@ Meteor.methods({
     const tpl = `orders/${order.workflow.status}`;
     SSR.compileTemplate(tpl, Reaction.Email.getTemplate(tpl));
 
-    console.log('combined items', dataForOrderEmail.combinedItems);
     Reaction.Email.send({
       to: order.email,
       from: `${shop.name} <${shop.emails[0].address}>`,

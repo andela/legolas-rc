@@ -16,16 +16,12 @@ import {
 } from "./";
 import { AlertContainer } from "/imports/plugins/core/ui/client/containers";
 import { PublishContainer } from "/imports/plugins/core/revisions";
-import { Meteor } from "meteor/meteor";
-import * as Collections from "/lib/collections";
-import { Reaction } from "/client/api";
 
 class ProductDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
       showDigital: false,
-      productPaid: "",
       downloadUrl: ""
     };
     this.onDigitalChange = this.onDigitalChange.bind(this);
@@ -48,20 +44,6 @@ class ProductDetail extends Component {
 
   get editable() {
     return this.props.editable;
-  }
-
-  getUserOrders() {
-    const orderSub = Meteor.subscribe("AccountOrders", Meteor.userId());
-    if (orderSub.ready()) {
-      return Collections.Orders.find({
-        userId: Meteor.userId()
-      }, {
-          sort: {
-            createdAt: -1
-          },
-          limit: 25
-        }).fetch();
-    }
   }
 
   handleVisibilityChange = (event, isProductVisible) => {
@@ -109,7 +91,6 @@ class ProductDetail extends Component {
   }
 
   isDigital() {
-
     this.setState({ showDigital: true });
   }
 
@@ -126,19 +107,8 @@ class ProductDetail extends Component {
   onDigitalChange(e) {
     this.setState({ downloadUrl: e.target.value });
   }
-  productOrder() {
-
-  }
 
   render() {
-
-    const user = Meteor.user();
-    const rolesObj = user.roles;
-    const key = Object.keys(rolesObj);
-    const roles = rolesObj[key[0]];
-    const isAdmin = roles.indexOf("admin") !== -1;
-    if (this.getUserOrders()) {
-    }
     return (
       <div className="" style={{ position: "relative" }}>
         {this.renderToolbar()}
