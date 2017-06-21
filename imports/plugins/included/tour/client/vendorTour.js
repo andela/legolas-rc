@@ -28,7 +28,7 @@ export function vendorTour() {
       },
       {
         element: document.querySelectorAll(".toolbar-group.right button")[0],
-        intro: "Click me to toggel the visibility of your product"
+        intro: "Click me to toggle the visibility of your product"
       },
       {
         element: document.querySelectorAll(".rui.btn-toolbar div.btn-group button")[0],
