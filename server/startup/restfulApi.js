@@ -30,7 +30,7 @@ export default () => {
               hasPermission(this.user, "owner")) {
               const allRecords = collectionName.findOne(this.urlParams.id);
               if (!allRecords) {
-                return { status: "fail",
+                return { statusCode: 404, status: "fail",
                   message: "Record does not exist" };
               }
               return { status: "success", data: allRecords };
@@ -49,7 +49,7 @@ export default () => {
               } return { statusCode: 400, status: "fail",
                 message: "Post was not successful" };
             }
-            return { statusCode: 403, status: "fail",
+            return { statusCode: 401, status: "fail",
               message: "You do not have permission to add a record" };
           }
         },
@@ -63,13 +63,13 @@ export default () => {
                 $set: this.bodyParams
               });
               if (!isUpdated) {
-                return { status: "fail", statusCode: 404,
+                return { statusCode: 404, status: "fail",
                   message: "Record does not exist" };
               }
               const record = collectionName.findOne(this.urlParams.id);
               return { status: "success", data: isUpdated, record };
             }
-            return { statusCode: 403, status: "fail",
+            return { statusCode: 401, status: "fail",
               message: "You do not have permission to edit this record" };
           }
         },
@@ -90,9 +90,9 @@ export default () => {
               // other collections can be removed
               }
               const isDeleted = collectionName.remove({ _id: this.urlParams.id });
-              return { status: "success", data: isDeleted,  message: "record is deleted" };
+              return { status: "success", data: isDeleted,  message: "Record is deleted" };
             }
-            return { statusCode: 403, status: "fail",
+            return { statusCode: 401, status: "fail",
               message: "You do not have permission to delete this record" };
           }
         }
