@@ -18,21 +18,22 @@ import { AlertContainer } from "/imports/plugins/core/ui/client/containers";
 import { PublishContainer } from "/imports/plugins/core/revisions";
 import { Meteor } from "meteor/meteor";
 import * as Collections from "/lib/collections";
+import { Reaction } from "/client/api";
 
 class ProductDetail extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       showDigital: false,
-      productPaid: ""
+      productPaid: "",
+      downloadUrl: ""
     };
-
+    this.onDigitalChange = this.onDigitalChange.bind(this);
     this.isDigital = this.isDigital.bind(this);
+    this.onDigitalSaveClick = this.onDigitalSaveClick.bind(this);
   }
   componentWillMount() {
     if (this.getUserOrders()) {
-      console.log(this.getUserOrders().indexOf(this.product._id));
       this.setState({ productPaid: this.getUserOrders().indexOf(this.product._id) });
     }
   }
@@ -109,23 +110,34 @@ class ProductDetail extends Component {
 
   isDigital() {
 
-    this.setState({ showDigital: !this.state.showDigital });
+    this.setState({ showDigital: true });
+  }
+
+  onDigitalSaveClick() {
+    if (this.state.downloadUrl == '') {
+      document.getElementById('digital').checked = false;
+    } else {
+      this.props.onProductFieldChange(this.product._id, "downloadUrl", this.state.downloadUrl);
+      this.props.onProductFieldChange(this.product._id, "isDigital", true);
+      document.getElementById('digital').checked = true;
+      this.setState({ showDigital: false });
+    }
+  }
+  onDigitalChange(e) {
+    this.setState({ downloadUrl: e.target.value });
   }
   productOrder() {
 
   }
 
   render() {
+
     const user = Meteor.user();
     const rolesObj = user.roles;
     const key = Object.keys(rolesObj);
-    console.log('user',user)
     const roles = rolesObj[key[0]];
     const isAdmin = roles.indexOf("admin") !== -1;
-    console.log(isAdmin);
     if (this.getUserOrders()) {
-      console.log(this.getUserOrders().indexOf(this.product._id));
-      //this.setState({productPaid: this.getUserOrders().indexOf(this.product._id) });
     }
     return (
       <div className="" style={{ position: "relative" }}>
@@ -213,7 +225,6 @@ class ProductDetail extends Component {
                   }}
                 />
               </div>
-              Check him again
               {this.props.hasAdminPermission && <div className="digitalProduct">
                 <div className="checkbox">
                   <h3><input id="digital" type="checkbox" value="" onChange={() => this.isDigital()} />Digital Product</h3>
@@ -223,24 +234,13 @@ class ProductDetail extends Component {
               {this.state.showDigital &&
                 <div className="digitalProduct">
                   <div className="checkbox">
-                    <input type="text" id="url" placeholder="Enter download url" />
-                    <button id="save" className="btn btn-success pull-right">Save</button>
+                    <input type="text" id="url" value={this.state.downloadUrl}
+                      onChange={this.onDigitalChange} placeholder="Enter download url" />
+                    <button id="save" className="btn btn-success pull-right" onClick={this.onDigitalSaveClick}>Save</button>
 
                   </div>
                 </div>
               }
-              {this.state.productPaid > 0 &&
-                <div>
-                  <a href="http://downloadLink"><h5>Download url: {'downloadLink'}</h5></a>
-                </div>
-              }
-
-
-
-
-
-
-
 
               <div className="options-add-to-cart">
                 {this.props.topVariantComponent}
