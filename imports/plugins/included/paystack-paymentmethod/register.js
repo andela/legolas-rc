@@ -28,6 +28,7 @@ Reaction.registerPackage({
 
     // Payment form for checkout
     {
+      label: "Paystack",
       template: "paystackPaymentForm",
       provides: "paymentMethod",
       icon: "fa fa-credit-card-alt"
