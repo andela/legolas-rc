@@ -360,6 +360,7 @@ Meteor.methods({
 
           return false;
         });
+
         // Increment the quantity count for the duplicate product variants
         if (foundItem) {
           foundItem.quantity++;

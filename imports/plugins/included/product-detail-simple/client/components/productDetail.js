@@ -28,11 +28,6 @@ class ProductDetail extends Component {
     this.isDigital = this.isDigital.bind(this);
     this.onDigitalSaveClick = this.onDigitalSaveClick.bind(this);
   }
-  componentWillMount() {
-    if (this.getUserOrders()) {
-      this.setState({ productPaid: this.getUserOrders().indexOf(this.product._id) });
-    }
-  }
 
   get tags() {
     return this.props.tags || [];
