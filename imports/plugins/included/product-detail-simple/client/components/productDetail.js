@@ -20,6 +20,17 @@ import { Accounts } from "/lib/collections";
 import { vendorTour } from "/imports/plugins/included/tour/client/vendorTour";
 
 class ProductDetail extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showDigital: false,
+      downloadUrl: ""
+    };
+    this.onDigitalChange = this.onDigitalChange.bind(this);
+    this.isDigital = this.isDigital.bind(this);
+    this.onDigitalSaveClick = this.onDigitalSaveClick.bind(this);
+  }
+
   get tags() {
     return this.props.tags || [];
   }
@@ -61,7 +72,7 @@ class ProductDetail extends Component {
       return (
         <Toolbar>
           <ToolbarGroup firstChild={true}>
-            <Translation defaultValue="Product Management" i18nKey="productDetail.productManagement"/>
+            <Translation defaultValue="Product Management" i18nKey="productDetail.productManagement" />
           </ToolbarGroup>
           <ToolbarGroup>
             <DropDownMenu
@@ -91,11 +102,28 @@ class ProductDetail extends Component {
     return null;
   }
 
+  isDigital() {
+    this.setState({ showDigital: true });
+  }
+
+  onDigitalSaveClick() {
+    if (this.state.downloadUrl == '') {
+      document.getElementById('digital').checked = false;
+    } else {
+      this.props.onProductFieldChange(this.product._id, "downloadUrl", this.state.downloadUrl);
+      this.props.onProductFieldChange(this.product._id, "isDigital", true);
+      document.getElementById('digital').checked = true;
+      this.setState({ showDigital: false });
+    }
+  }
+  onDigitalChange(e) {
+    this.setState({ downloadUrl: e.target.value });
+  }
+
   render() {
     return (
-      <div className="" style={{position: "relative"}}>
+      <div className="" style={{ position: "relative" }}>
         {this.renderToolbar()}
-
         <div className="container-main container-fluid pdp-container" itemScope itemType="http://schema.org/Product">
           <AlertContainer placement="productManagement" />
 
@@ -165,7 +193,6 @@ class ProductDetail extends Component {
                   }}
                 />
               </div>
-
               <div className="pdp product-info">
                 <ProductField
                   editable={this.editable}
@@ -180,6 +207,22 @@ class ProductDetail extends Component {
                   }}
                 />
               </div>
+              {this.props.hasAdminPermission && <div className="digitalProduct">
+                <div className="checkbox">
+                  <h3><input id="digital" type="checkbox" value="" onChange={() => this.isDigital()} />Digital Product</h3>
+                </div>
+              </div>}
+
+              {this.state.showDigital &&
+                <div className="digitalProduct">
+                  <div className="checkbox">
+                    <input type="text" id="url" value={this.state.downloadUrl}
+                      onChange={this.onDigitalChange} placeholder="Enter download url" />
+                    <button id="save" className="btn btn-success pull-right" onClick={this.onDigitalSaveClick}>Save</button>
+
+                  </div>
+                </div>
+              }
 
               <div className="options-add-to-cart">
                 {this.props.topVariantComponent}
@@ -220,3 +263,6 @@ ProductDetail.propTypes = {
 };
 
 export default ProductDetail;
+
+
+
