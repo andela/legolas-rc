@@ -75,6 +75,10 @@ const OrderHelper =  {
       default:
     }
 
+    const isVendor = Roles.userIsInRole(Meteor.userId(), ["vendor"], Reaction.shopId);
+    if (isVendor) {
+      query["items.0.reactionVendorId"] = Meteor.userId();
+    }
     return query;
   }
 };

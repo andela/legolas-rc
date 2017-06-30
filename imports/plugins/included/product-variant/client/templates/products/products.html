@@ -1,7 +1,17 @@
 <template name="products">
-
+{{#if shopName}}
+ <div id="name" class="nav nav-dashboard">
+   <div class="row">
+  <div class="col-md-12 shop-nav"><h1 class="page-title">Welcome To {{shopName}} Shop</h1></div>
+  {{#with shopDetails}}
+   <div class="col-md-12 shop-nav"><h5 class="page-subtitle">Phone: {{shopPhone}}</h5></div>
+   <div class="col-md-12 shop-nav"><h5 class="page-subtitle">Address: {{shopAddress}}</h5></div>
+  {{/with}}
+ </div>
+ </div>
+ {{/if}}
   {{#if ready}}
-    {{>productGrid products=products}}
+    {{>productGrid products=products shopName=shopName}}
 
     {{#if loadMoreProducts}}
       <div class="product-load-more" id="productScrollLimitLoader">

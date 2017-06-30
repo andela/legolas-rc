@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { ServiceConfigHelper } from "./util";
 import { Template } from "meteor/templating";
+import * as Collections from "/lib/collections";
 
 export const LoginFormSharedHelpers = {
 
@@ -43,5 +44,12 @@ export const LoginFormSharedHelpers = {
 
   hasPasswordService() {
     return !!Package["accounts-password"];
+  },
+  shopDetails() {
+    const account = Collections.Accounts.findOne();
+    if (account.profile.vendorDetails) {
+      return account.profile.vendorDetails[0];
+    }
+    return false;
   }
 };

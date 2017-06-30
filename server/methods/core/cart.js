@@ -157,7 +157,7 @@ Meteor.methods({
         // up completely, just to `coreCheckoutShipping` stage. Also, we will
         // need to recalculate shipping rates
         if (typeof currentCart.workflow === "object" &&
-        typeof currentCart.workflow.workflow === "object") {
+          typeof currentCart.workflow.workflow === "object") {
           if (currentCart.workflow.workflow.length > 2) {
             Meteor.call("workflow/revertCartWorkflow", "coreCheckoutShipping");
             // refresh shipping quotes
@@ -250,13 +250,13 @@ Meteor.methods({
       sessionId: sessionId,
       userId: userId
     });
-    Logger.debug("create cart: into new user cart. created: " +  currentCartId +
+    Logger.debug("create cart: into new user cart. created: " + currentCartId +
       " for user " + userId);
 
     // merge session carts into the current cart
     if (sessionCartCount > 0 && !anonymousUser) {
-      Logger.debug("create cart: found existing cart. merge into " + currentCartId
-        + " for user " + userId);
+      Logger.debug("create cart: found existing cart. merge into " + currentCartId +
+        " for user " + userId);
       Meteor.call("cart/mergeCart", currentCartId, sessionId);
     }
 
@@ -289,11 +289,10 @@ Meteor.methods({
    *  @param {Number} [itemQty] - qty to add to cart
    *  @return {Number|Object} Mongo insert response
    */
-  "cart/addToCart": function (productId, variantId, itemQty) {
+  "cart/addToCart": function (productId, variantId, itemQty, isDigital) {
     check(productId, String);
     check(variantId, String);
     check(itemQty, Match.Optional(Number));
-
     const cart = Collections.Cart.findOne({ userId: this.userId });
     if (!cart) {
       Logger.error(`Cart not found for user: ${ this.userId }`);
@@ -306,10 +305,14 @@ Meteor.methods({
     // `quantityProcessing`?
     let product;
     let variant;
-    Collections.Products.find({ _id: { $in: [
-      productId,
-      variantId
-    ]}}).forEach(doc => {
+    Collections.Products.find({
+      _id: {
+        $in: [
+          productId,
+          variantId
+        ]
+      }
+    }).forEach(doc => {
       if (doc.type === "simple") {
         product = doc;
       } else {
@@ -377,6 +380,7 @@ Meteor.methods({
           quantity: quantity,
           variants: variant,
           title: product.title,
+          reactionVendorId: product.reactionVendorId,
           type: product.type
         }
       }
@@ -490,6 +494,7 @@ Meteor.methods({
    * don't want to just make another cart item
    * @todo:  Partial order processing, shopId processing
    * @todo:  Review Security on this method
+   * @param {Boolean} isDigital- isDigital or checking for digital product
    * @param {String} cartId - cartId to transform to order
    * @return {String} returns orderId
    */
@@ -593,7 +598,7 @@ Meteor.methods({
       throw new Meteor.Error("no-cart-items", msg);
     }
 
-    // set new workflow status
+
     order.workflow.status = "new";
     order.workflow.workflow = ["coreOrderWorkflow/created"];
 
@@ -602,8 +607,6 @@ Meteor.methods({
     Logger.info("Created orderId", orderId);
 
     if (orderId) {
-      // TODO: check for successful orders/inventoryAdjust
-      // Meteor.call("orders/inventoryAdjust", orderId);
       Collections.Cart.remove({
         _id: order.cartId
       });
@@ -736,7 +739,7 @@ Meteor.methods({
    */
   "cart/setShipmentAddress": function (cartId, address) {
     check(cartId, String);
-    check(address, Schemas.Address);
+    check(address, Reaction.Schemas.Address);
 
     const cart = Collections.Cart.findOne({
       _id: cartId,
@@ -820,7 +823,7 @@ Meteor.methods({
    */
   "cart/setPaymentAddress": function (cartId, address) {
     check(cartId, String);
-    check(address, Schemas.Address);
+    check(address, Reaction.Schemas.Address);
 
     const cart = Collections.Cart.findOne({
       _id: cartId,
@@ -890,7 +893,7 @@ Meteor.methods({
     const selector = {
       _id: cart._id
     };
-    const update = { $unset: {}};
+    const update = { $unset: {} };
     // user could turn off the checkbox in address to not to be default, then we
     // receive `type` arg
     if (typeof type === "string") {

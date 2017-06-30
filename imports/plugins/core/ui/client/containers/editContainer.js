@@ -2,6 +2,7 @@ import React, { Children, Component, PropTypes } from "react";
 import { Reaction } from "/client/api";
 import { EditButton, VisibilityButton, Translation } from "/imports/plugins/core/ui/client/components";
 import { composeWithTracker } from "react-komposer";
+import * as Collections from "/lib/collections";
 
 class EditContainer extends Component {
 
@@ -162,12 +163,32 @@ function composer(props, onData) {
   if (props.disabled === true || viewAs === "customer") {
     hasPermission = false;
   } else {
-    hasPermission = Reaction.hasPermission(props.premissions);
+    if (editPermission() || Reaction.hasAdminAccess()) {
+      hasPermission = Reaction.hasPermission(props.permissions);
+    }
   }
-
   onData(null, {
     hasPermission
   });
+}
+
+function editPermission() {
+  let canEditProduct = false;
+  let vendor;
+  let product;
+  let vendorShopName;
+  let productVendor;
+  if (Roles.userIsInRole(Meteor.userId(), ["vendor"], Reaction.shopId)) {
+    vendor = Collections.Accounts.findOne({userId: Meteor.userId()});
+    vendorShopName = vendor.profile.vendorDetails[0].shopName;
+    product = Collections.Products.findOne({ vendor: vendorShopName });
+    productVendor = product ? product.vendor : null;
+
+    if (vendorShopName === productVendor) {
+      canEditProduct = true;
+    }
+  }
+  return canEditProduct;
 }
 
 export default composeWithTracker(composer)(EditContainer);
