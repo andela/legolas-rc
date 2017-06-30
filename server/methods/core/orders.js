@@ -80,10 +80,10 @@ Meteor.methods({
         "_id": order._id,
         "shipping._id": shipment._id
       }, {
-        $set: {
-          "shipping.$.packed": packed
-        }
-      });
+          $set: {
+            "shipping.$.packed": packed
+          }
+        });
 
       // Set the status of the items as shipped
       const itemIds = shipment.items.map((item) => {
@@ -96,10 +96,10 @@ Meteor.methods({
           "_id": order._id,
           "shipping._id": shipment._id
         }, {
-          $set: {
-            "shipping.$.packed": packed
-          }
-        });
+            $set: {
+              "shipping.$.packed": packed
+            }
+          });
       }
       return result;
     }
@@ -210,6 +210,38 @@ Meteor.methods({
       }
     });
   },
+
+  /**
+   * orders/cancelOrder
+   *
+   * @summary Cancel an Order
+   * @param {Object} order - order object
+   * @param {Object} newComment - new comment object
+   * @return {Object} return updated result
+   */
+  "orders/cancelOrder"(order, newComment) {
+    check(order, Object);
+    check(newComment, Object);
+
+    if (!Reaction.hasPermission("orders")) {
+      throw new Meteor.Error(403, "Access Denied");
+    }
+
+    // Update Order
+    return Orders.update(order._id, {
+      $set: {
+        "workflow.status": "cancelled"
+      },
+      $push: {
+        comments: newComment
+      },
+      $addToSet: {
+        "workflow.workflow": "coreOrderWorkflow/cancelled"
+      }
+    });
+  },
+
+
   /**
    * orders/shipmentShipped
    *
@@ -436,7 +468,7 @@ Meteor.methods({
       from: `${shop.name} <${shop.emails[0].address}>`,
       subject: `Your order is confirmed`,
       // subject: `Order update from ${shop.name}`,
-      html: SSR.render(tpl,  dataForOrderEmail)
+      html: SSR.render(tpl, dataForOrderEmail)
     });
 
     return true;
@@ -490,10 +522,10 @@ Meteor.methods({
       "_id": orderId,
       "shipping._id": shippingId
     }, {
-      $addToSet: {
-        "shipping.shipments": data
-      }
-    });
+        $addToSet: {
+          "shipping.shipments": data
+        }
+      });
   },
 
   /**
@@ -518,10 +550,10 @@ Meteor.methods({
       "_id": order._id,
       "shipping._id": shipment._id
     }, {
-      $set: {
-        ["shipping.$.tracking"]: tracking
-      }
-    });
+        $set: {
+          ["shipping.$.tracking"]: tracking
+        }
+      });
   },
 
   /**
@@ -546,10 +578,10 @@ Meteor.methods({
       "_id": orderId,
       "shipping._id": shipmentId
     }, {
-      $push: {
-        "shipping.$.items": item
-      }
-    });
+        $push: {
+          "shipping.$.items": item
+        }
+      });
   },
 
   "orders/updateShipmentItem": function (orderId, shipmentId, item) {
@@ -565,10 +597,10 @@ Meteor.methods({
       "_id": orderId,
       "shipments._id": shipmentId
     }, {
-      $addToSet: {
-        "shipment.$.items": shipmentIndex
-      }
-    });
+        $addToSet: {
+          "shipment.$.items": shipmentIndex
+        }
+      });
   },
 
   /**
@@ -619,7 +651,7 @@ Meteor.methods({
       throw new Meteor.Error(403, "Access Denied. You are not connected.");
     }
 
-    return Orders.update({cartId: cartId}, {
+    return Orders.update({ cartId: cartId }, {
       $set: {
         email: email
       }
@@ -699,10 +731,10 @@ Meteor.methods({
       Products.update({
         _id: item.variants._id
       }, {
-        $inc: {
-          inventoryQuantity: -item.quantity
-        }
-      }, { selector: { type: "variant" } });
+          $inc: {
+            inventoryQuantity: -item.quantity
+          }
+        }, { selector: { type: "variant" } });
     });
   },
 
@@ -746,15 +778,15 @@ Meteor.methods({
               "_id": orderId,
               "billing.paymentMethod.transactionId": transactionId
             }, {
-              $set: {
-                "billing.$.paymentMethod.mode": "capture",
-                "billing.$.paymentMethod.status": "completed",
-                "billing.$.paymentMethod.metadata": metadata
-              },
-              $push: {
-                "billing.$.paymentMethod.transactions": result
-              }
-            });
+                $set: {
+                  "billing.$.paymentMethod.mode": "capture",
+                  "billing.$.paymentMethod.status": "completed",
+                  "billing.$.paymentMethod.metadata": metadata
+                },
+                $push: {
+                  "billing.$.paymentMethod.transactions": result
+                }
+              });
           } else {
             if (result && result.error) {
               Logger.fatal("Failed to capture transaction.", order, paymentMethod.transactionId, result.error);
@@ -766,16 +798,16 @@ Meteor.methods({
               "_id": orderId,
               "billing.paymentMethod.transactionId": transactionId
             }, {
-              $set: {
-                "billing.$.paymentMethod.mode": "capture",
-                "billing.$.paymentMethod.status": "error"
-              },
-              $push: {
-                "billing.$.paymentMethod.transactions": result
-              }
-            });
+                $set: {
+                  "billing.$.paymentMethod.mode": "capture",
+                  "billing.$.paymentMethod.status": "error"
+                },
+                $push: {
+                  "billing.$.paymentMethod.transactions": result
+                }
+              });
 
-            return {error: "orders/capturePayments: Failed to capture transaction"};
+            return { error: "orders/capturePayments: Failed to capture transaction" };
           }
         });
       }
@@ -839,10 +871,10 @@ Meteor.methods({
       "_id": orderId,
       "billing.paymentMethod.transactionId": transactionId
     }, {
-      $push: {
-        "billing.$.paymentMethod.transactions": result
-      }
-    });
+        $push: {
+          "billing.$.paymentMethod.transactions": result
+        }
+      });
 
     if (result.saved === false) {
       Logger.fatal("Attempt for refund transaction failed", order._id, paymentMethod.transactionId, result.error);
