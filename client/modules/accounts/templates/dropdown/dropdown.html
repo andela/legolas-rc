@@ -28,7 +28,6 @@
     </div>
     <div class="btn btn-primary btn-block" id="logout" data-i18n="accountsUI.signOut">Sign Out</div>
   </div>
-
 </template>
 
 <template name="accountsDropdownApps">
@@ -36,14 +35,16 @@
     {{> userAccountsDropdown}}
     <!--administrative shortcut icons -->
     {{#each reactionApps provides="shortcut" enabled=true}}
-      <li class="dropdown-apps-icon">
-        <a href={{pathFor name}} id="dropdown-apps-{{name}}" title="{{label}}">
-          <i class="{{icon}}"></i>
-          <span class="icon-text">
-            {{i18n i18nKeyLabel label}}
-          </span>
-        </a>
-      </li>
+      {{#if showDashboard label}}
+        <li class="dropdown-apps-icon">
+          <a href={{pathFor name}} id="dropdown-apps-{{name}}" title="{{label}}">
+            <i class="{{icon}}"></i>
+            <span class="icon-text">
+              {{i18n i18nKeyLabel label}}
+            </span>
+          </a>
+        </li>
+      {{/if}}
     {{/each}}
     {{#if isShopMember}}
       {{> analytics}}

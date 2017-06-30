@@ -48,31 +48,33 @@
     </div>
   </div>
 
-  <div class="admin-controls-menu">
+  {{#if isAdmin}}
+    <div class="admin-controls-menu">
 
-    <nav class="admin-controls-quicklinks">
-      {{!-- Reaction.Apps provides=shortcut --}}
-      {{#each props in shortcutButtons}}
-        {{#if isSeperator props}}
-          <div class="rui separator padding xs">
-            <hr>
-          </div>
-        {{else}}
-          {{> button props}}
-        {{/if}}
-      {{/each}}
-    </nav>
+      <nav class="admin-controls-quicklinks">
+        {{!-- Reaction.Apps provides=shortcut --}}
+        {{#each props in shortcutButtons}}
+          {{#if isSeperator props}}
+            <div class="rui separator padding xs">
+              <hr>
+            </div>
+          {{else}}
+            {{> button props}}
+          {{/if}}
+        {{/each}}
+      </nav>
 
-    <nav class="admin-controls-actions">
-      <!-- begin dashboardControls -->
-      {{> Template.dynamic template=dashboardControls}}
-      <!-- end dashboardControls -->
+      <nav class="admin-controls-actions">
+        <!-- begin dashboardControls -->
+        {{> Template.dynamic template=dashboardControls}}
+        <!-- end dashboardControls -->
 
-      {{#each buttonProps in packageButtons}}
-        {{> button buttonProps}}
-      {{/each}}
-    </nav>
+        {{#each buttonProps in packageButtons}}
+          {{> button buttonProps}}
+        {{/each}}
+      </nav>
 
-  </div>
+    </div>
+  {{/if}}
 
 </template>

@@ -71,6 +71,13 @@ Template.loginDropdown.events({
 });
 
 Template.accountsDropdownApps.helpers({
+  showDashboard(label) {
+    if (Object.keys(Meteor.user().roles).length < 2 && label === 'Dashboard') {
+      return false;
+    }
+    return true;
+  }
+
   /**
    * isShopMember
    * @return {Boolean} True if the memnber is an administrator
@@ -78,16 +85,4 @@ Template.accountsDropdownApps.helpers({
   isShopMember() {
     return Reaction.hasPermission("admin");
   },
-
-  /**
-   * analytics button
-   * @param  {Event} event - jQuery Event
-   * @return {void}
-   */
-  "click #analytics": (event) => {
-    event.preventDefault();
-    // Meteor.call("/reaction/dashboard/actionable_analytics");
-    Reaction.Router.go("/reaction/dashboard/actionable_analytics");
-    // FlowRouter.go("/reaction/dashboard/actionable_analytics");
-  }
 });
