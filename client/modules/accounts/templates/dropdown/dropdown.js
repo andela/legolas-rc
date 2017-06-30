@@ -76,7 +76,7 @@ Template.accountsDropdownApps.helpers({
       return false;
     }
     return true;
-  }
+  },
 
   /**
    * isShopMember
@@ -84,5 +84,5 @@ Template.accountsDropdownApps.helpers({
    */
   isShopMember() {
     return Reaction.hasPermission("admin");
-  },
+  }
 });
