@@ -69,3 +69,25 @@ Template.loginDropdown.events({
     template.$(".dropdown-toggle").dropdown("toggle");
   }
 });
+
+Template.accountsDropdownApps.helpers({
+  /**
+   * isShopMember
+   * @return {Boolean} True if the memnber is an administrator
+   */
+  isShopMember() {
+    return Reaction.hasPermission("admin");
+  },
+
+  /**
+   * analytics button
+   * @param  {Event} event - jQuery Event
+   * @return {void}
+   */
+  "click #analytics": (event) => {
+    event.preventDefault();
+    // Meteor.call("/reaction/dashboard/actionable_analytics");
+    Reaction.Router.go("/reaction/dashboard/actionable_analytics");
+    // FlowRouter.go("/reaction/dashboard/actionable_analytics");
+  }
+});
