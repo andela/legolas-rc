@@ -46,6 +46,9 @@
         </li>
       {{/if}}
     {{/each}}
+    {{#if isShopMember}}
+      {{> analytics}}
+    {{/if}}
   </ul>
 </template>
 
@@ -66,4 +69,16 @@
     <span class="icon-text" data-i18n="accountsUI.signedIn">You are signed in.</span>
   </li>
   {{/each}}
+</template>
+
+<template name="analytics">
+  <li class="dropdown-apps-icon">
+    <a id="analytics">
+    <!--<a href="/reaction/dashboard/actionable_analytics" id="analytics">-->
+      <i class="fa fa-area-chart" aria-hidden="true"></i>
+      <span class="icon-text">
+        Analytics
+      </span>
+    </a>
+  </li>
 </template>

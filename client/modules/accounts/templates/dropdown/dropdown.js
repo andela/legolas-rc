@@ -77,4 +77,12 @@ Template.accountsDropdownApps.helpers({
     }
     return true;
   }
+
+  /**
+   * isShopMember
+   * @return {Boolean} True if the memnber is an administrator
+   */
+  isShopMember() {
+    return Reaction.hasPermission("admin");
+  },
 });
