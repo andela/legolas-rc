@@ -42,6 +42,7 @@ class PinterestSocialButton extends Component {
   render() {
     const iconClassNames = classnames({
       "fa": true,
+      "fa-lg": true,
       "fa-pinterest": this.props.altIcon !== true,
       "fa-pinterest-alt": this.props.altIcon,
       [this.props.size]: this.props.size
