@@ -71,6 +71,7 @@ class TwitterSocialButton extends Component {
   render() {
     const iconClassNames = classnames({
       "fa": true,
+      "fa-lg": true,
       "fa-twitter": this.props.altIcon !== true,
       "fa-twitter-alt": this.props.altIcon,
       [this.props.size]: this.props.size

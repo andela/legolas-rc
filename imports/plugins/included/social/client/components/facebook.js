@@ -83,6 +83,7 @@ class FacebookSocialButton extends Component {
   render() {
     const iconClassNames = classnames({
       "fa": true,
+      "fa-lg": true,
       "fa-facebook": this.props.altIcon !== true,
       "fa-facebook-alt": this.props.altIcon,
       [this.props.size]: this.props.size
