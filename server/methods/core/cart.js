@@ -382,6 +382,8 @@ Meteor.methods({
           title: product.title,
           reactionVendorId: product.reactionVendorId,
           type: product.type
+          isDigital: product.isDigital,
+          downloadUrl: product.downloadUrl
         }
       }
     }, function (error, result) {

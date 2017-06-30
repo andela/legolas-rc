@@ -13,6 +13,9 @@ const orderFilters = [{
 }, {
   name: "completed",
   label: "Completed"
+}, {
+  name: "cancelled",
+  label: "Cancelled"
 }];
 
 const OrderHelper =  {
@@ -59,9 +62,9 @@ const OrderHelper =  {
         };
         break;
 
-      case "canceled":
+      case "cancelled":
         query = {
-          "workflow.status": "canceled"
+          "workflow.status": "cancelled"
         };
         break;
 
@@ -167,6 +170,16 @@ Template.ordersListItem.helpers({
 
   orderIsNew(order) {
     return order.workflow.status === "new";
+  },
+
+  isCancelled(order) {
+    if (order.workflow.status === "cancelled") {
+      return true;
+    }
+    return false;
+  },
+  cancelledReason(order) {
+    return order.comment[0].body;
   }
 });
 

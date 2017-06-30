@@ -1,5 +1,6 @@
 import Drop from "tether-drop";
 import { Meteor } from "meteor/meteor";
+import { Accounts } from "meteor/accounts-base";
 import { Blaze } from "meteor/blaze";
 import { Template } from "meteor/templating";
 import { Reaction, i18next } from "/client/api";
@@ -66,6 +67,13 @@ Template.coreAdminLayout.helpers({
     });
 
     return items;
+  },
+
+  isAdmin() {
+    if (Object.keys(Meteor.user().roles).length < 2) {
+      return false;
+    }
+    return true;
   },
 
   isSeperator(props) {

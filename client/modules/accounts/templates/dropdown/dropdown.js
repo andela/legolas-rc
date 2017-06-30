@@ -69,3 +69,20 @@ Template.loginDropdown.events({
     template.$(".dropdown-toggle").dropdown("toggle");
   }
 });
+
+Template.accountsDropdownApps.helpers({
+  showDashboard(label) {
+    if (Object.keys(Meteor.user().roles).length < 2 && label === 'Dashboard') {
+      return false;
+    }
+    return true;
+  },
+
+  /**
+   * isShopMember
+   * @return {Boolean} True if the memnber is an administrator
+   */
+  isShopMember() {
+    return Reaction.hasPermission("admin");
+  }
+});

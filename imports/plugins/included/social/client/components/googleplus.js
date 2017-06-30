@@ -59,6 +59,7 @@ class GooglePlusSocialButton extends Component {
   render() {
     const iconClassNames = classnames({
       "fa": true,
+      "fa-lg": true,
       "fa-google-plus": this.props.altIcon !== true,
       "fa-google-plus-alt": this.props.altIcon,
       [this.props.size]: this.props.size
