@@ -14,11 +14,6 @@ Reaction.registerPackage({
         accSid: "",
         phoneNumber: ""
       },
-      jusibe: {
-        publicKey: "",
-        accessToken: "",
-        phoneNumber: ""
-      },
       message: {
         payment: "",
         wallet: "",

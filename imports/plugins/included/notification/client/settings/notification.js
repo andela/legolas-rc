@@ -4,7 +4,6 @@ import { ReactiveDict } from "meteor/reactive-dict";
 import { Reaction } from "/client/api";
 import { Packages } from "/lib/collections";
 import { TwilioPackageConfig } from "../../lib/collections/schemas";
-import { JusibePackageConfig } from "../../lib/collections/schemas";
 import { DefaultPackageConfig } from "../../lib/collections/schemas";
 import { EmailNotificationPackageConfig } from "../../lib/collections/schemas";
 import { SmsMessagePackageConfig } from "../../lib/collections/schemas";
@@ -63,15 +62,6 @@ Template.twilioSettings.helpers({
   }
 });
 
-Template.jusibeSettings.helpers({
-  JusibePackageConfig() {
-    return JusibePackageConfig;
-  },
-  packageData() {
-    return getPackageData();
-  }
-});
-
 Template.notificationSettings.helpers({
   DefaultPackageConfig() {
     return DefaultPackageConfig;
@@ -104,18 +94,6 @@ AutoForm.hooks({
   }
 });
 
-AutoForm.hooks({
-  "jusibe-update-form": {
-    onSuccess: function () {
-      Alerts.removeSeen();
-      return Alerts.add("Jusibe api settings saved", "success");
-    },
-    onError: function (operation, error) {
-      Alerts.removeSeen();
-      return Alerts.add("An error occurred " + error, "danger");
-    }
-  }
-});
 
 AutoForm.hooks({
   "sms-update-form": {

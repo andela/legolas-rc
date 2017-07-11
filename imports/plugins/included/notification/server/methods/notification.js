@@ -5,7 +5,6 @@ import SmtpTransport from "nodemailer-smtp-transport";
 import * as Collections from "/lib/collections";
 import { Reaction } from "/server/api";
 import Twilio from "twilio";
-import request from "request";
 import { Logger } from "/server/api";
 
   /**
@@ -61,7 +60,7 @@ Meteor.methods({
     let locale;
     details.user =  user.profile.addressBook[0].fullName || user.emails[0].address;
     details.userId =  user.profile.addressBook[0].fullName || user.emails[0].address;
-    details.balance = details.balance || parseInt(user.wallet.balance, 10);
+    // details.balance = details.balance || parseInt(user.wallet.balance, 10);
     details.email = user.emails[0].address;
     let message = messageParser(getMessage, details);
 
@@ -77,11 +76,11 @@ Meteor.methods({
         number: `+${locale}${profile.phone}`
       };
       const smsApi = settings.default;
-      Meteor.call(`notification/${smsApi}`, notificationDetails);
+      // Meteor.call(`notification/${smsApi}`, notificationDetails);
     }
     message = message ||  details.message;
     Meteor.call("notification/postInApp", type, message, user._id);
-    Meteor.call("notification/email", type, details);
+   // Meteor.call("notification/email", type, details);
 
     // triggers admin notification
     if (type === "payment") {
@@ -97,9 +96,9 @@ Meteor.methods({
           settings,
           number: adminNo
         };
-        Meteor.call(`notification/${smsApi}`, adminNotification);
+        //Meteor.call(`notification/${smsApi}`, adminNotification);
         Meteor.call("notification/postInApp", type, adminNotification.message, admin._id);
-        Meteor.call("notification/email", type, details);
+        //Meteor.call("notification/email", type, details);
       }
     }
   },
@@ -112,6 +111,7 @@ Meteor.methods({
    */
   "notification/twilio"(details) {
     check(details, Object);
+    console.log('the details from cart/submit',details)
     const client = Twilio(
       details.settings.api.twilio.accSid,
       details.settings.api.twilio.authToken
@@ -127,32 +127,6 @@ Meteor.methods({
         Logger.info("notification/twilio failure", res.body);
       }
     });
-  },
-
-  /**
-   * notification/jusibe
-   * @description Sends sms using twilio api
-   * @param {Object} details - details to be sent
-   * @return {void}
-   */
-  "notification/jusibe"(details) {
-    check(details, Object);
-    const username = details.settings.api.jusibe.publicKey;
-    const password = details.settings.api.jusibe.accessToken;
-    const from = details.settings.api.jusibe.phoneNumber;
-    form = {
-      to: details.number,
-      from: from || Reaction.getShopName(),
-      message: details.message
-    };
-    request.post("https://jusibe.com/smsapi/send_sms", { form }, (err, res) => {
-      if (res.statusCode === 200) {
-        Logger.info("notification/jusibe", res.body);
-      } else {
-        Logger.warn("notification/jusibe", res.body);
-      }
-    })
-    .auth(username, password, true);
   },
 
 

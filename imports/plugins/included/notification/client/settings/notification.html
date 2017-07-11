@@ -24,7 +24,6 @@
           <select name="smsMethod" id="smsMethod" class="form-control">
             <option disabled>(Select One)</option>
             <option value="twilioSettings">Twilio</option>
-            <option value="jusibeSettings">Jusibe</option>
             <option value="emailNotificationSettings">Email</option>
           </select>
         </div>   
@@ -84,15 +83,6 @@
     {{>afQuickField name='settings.api.twilio.authToken'}}
     {{>afQuickField name='settings.api.twilio.accSid'}}
     {{>afQuickField name='settings.api.twilio.phoneNumber'}}
-    <button type="submit" class="form-control btn btn-success pull-right">Update</button>
-  {{/autoForm}}
-</template>
-
-<template name="jusibeSettings">
-  {{#autoForm collection=Collections.Packages schema=JusibePackageConfig doc=packageData type="update" id="jusibe-update-form"}}
-    {{>afQuickField name='settings.api.jusibe.accessToken' placeholder="Access token"}}
-    {{>afQuickField name='settings.api.jusibe.publicKey' placeholder="Public Key"}}
-    {{>afQuickField name='settings.api.jusibe.phoneNumber' placeholder="Shope Name"}}
     <button type="submit" class="form-control btn btn-success pull-right">Update</button>
   {{/autoForm}}
 </template>

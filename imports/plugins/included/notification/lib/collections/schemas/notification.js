@@ -22,25 +22,7 @@ export const TwilioPackageConfig = new SimpleSchema([
   }
 ]);
 
-export const JusibePackageConfig = new SimpleSchema([
-  PackageConfig, {
-    "settings.api.jusibe.accessToken": {
-      type: String,
-      label: "Jusibe Access Token",
-      optional: true
-    },
-    "settings.api.jusibe.publicKey": {
-      type: String,
-      label: "Jusibe Public Key",
-      optional: true
-    },
-    "settings.api.jusibe.phoneNumber": {
-      type: String,
-      label: "Shop Name",
-      optional: true
-    }
-  }
-]);
+
 
 export const EmailNotificationPackageConfig = new SimpleSchema([
   PackageConfig, {
@@ -143,7 +125,7 @@ export const DefaultPackageConfig = new SimpleSchema([
       type: String,
       optional: true,
       defaultValue: "twilio",
-      allowedValues: ["twilio", "jusibe"]
+      allowedValues: ["twilio"]
     }
   }
 ]);
