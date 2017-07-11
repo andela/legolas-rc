@@ -1,0 +1,116 @@
+.notification-body {
+  position: relative;
+
+}
+.main-notification {
+  max-height: 500px;
+}
+.notifications {
+  width: 350px;
+  margin: 3px auto;
+  display: none;
+  position: absolute;
+  right: 0px;
+  top: 30px;
+  z-index: 10;
+}
+.notification {
+  width:350px;
+  padding:10px 0px 10px 10px;
+  border-bottom: 1px solid #dddddd;
+  position:relative;
+  font-size:100%;
+  background-color: #ecf5fb;
+  color: #000000;
+  cursor:pointer;
+}
+.notification h4 {
+  font-size:100%;
+  margin:0px 0px 5px 0px;
+}
+.notification p{
+  margin-left: 15px;
+  margin-top:0px;
+  color: #000000
+}
+.notification-head {
+  background-color: #908674;
+  padding: 5px;
+  color: white;
+}
+.notification-footer .delete-all,
+.notification-footer .read-all,
+.notification-footer .load-more {
+  float: left;
+  background-color: grey;
+  text-align: center;
+  color: white;
+}
+.notification-footer p {
+  margin: 0px;
+  padding: 10px;
+  cursor: pointer;
+}
+.notification-footer .load-more {
+  width: 20%;
+}
+.notification-footer .delete-all, 
+.notification-footer .read-all{
+  width: 30%;
+  border-right: 1px solid #000000;
+}
+
+.notification-head .delete-all:hover,
+.notification-head .load-more:hover,
+.notification-head .read-all:hover {
+  background-color: #a7a7a7
+}
+.notification-footer .n-prev {
+  border-right: 1px solid #000000
+}
+.notifications .arrow-up {
+  width: 0; 
+  height: 0; 
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid grey;
+  position: absolute;
+  top: -10px;
+  right: 5px;
+}
+
+.notification-badge {
+  background: red;
+  position: absolute;
+  top: -5px;
+  right: -15px;
+}
+.notification-menu {
+  position: relative;
+}
+
+.notification-footer .arrow-up {
+  width: 0; 
+  height: 0; 
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 15px solid #908674;
+}
+
+.notification-date {
+  color: grey;
+  float: right;
+  margin-right: 5px;
+  font-size:12px;
+}
+
+.notification-delete {
+  color: grey;
+  position: absolute;
+  right: 5px;
+  bottom: 0px
+}
+.notification-delete i:hover {
+  color: red;
+}
+

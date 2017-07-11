@@ -1,0 +1,109 @@
+<template name="notificationSettings">
+  <div class="panel panel-default">
+    <div class="panel-heading" data-toggle="collapse" data-target="#how">
+      <div class="panel-title">How to use </div>
+    </div>
+    <div class="panel-body collapse" id="how">
+      <h5>you can create custom messages and still allow certain user details to Be dynamically inserted.</h5>
+      <ul>
+        <li>userId: current user it</li>
+        <li>userTo: user fund is been transferred to </li>
+        <li>orderId: unique order key</li>
+        <li>balance: current balance</li>
+        <li>amount: current transaction cost</li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" data-toggle="collapse" data-target="#setings">
+      <div class="panel-title">Notification settings</div>
+    </div>
+    <div class="panel-body collapse" id="setings">
+      <form novalidate="novalidate">
+        <div class="form-group" data-required="true">
+          <select name="smsMethod" id="smsMethod" class="form-control">
+            <option disabled>(Select One)</option>
+            <option value="twilioSettings">Twilio</option>
+            <option value="jusibeSettings">Jusibe</option>
+            <option value="emailNotificationSettings">Email</option>
+          </select>
+        </div>   
+      </form>
+      <div class="sms-body">
+        {{> UI.dynamic template=showSettings }}
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" data-toggle="collapse" data-target="#default">
+      <div class="panel-title">Default settings</div>
+    </div>
+    <div class="panel-body collapse" id="default">
+      {{#autoForm collection=Collections.Packages schema=DefaultPackageConfig doc=packageData type="update" id="sms-update-form"}}
+          {{>afQuickField name='settings.default' options="allowed"  noselect=true}}
+        <button type="submit" class="btn btn-primary pull-right">Activate</button>
+      {{/autoForm}}
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" data-toggle="collapse" data-target="#smsMessage">
+      <div class="panel-title">Sms Message Settings</div>
+    </div>
+    <div class="panel-body collapse" id="smsMessage">
+      {{#autoForm collection=Collections.Packages schema=SmsMessagePackageConfig doc=packageData type="update" id="email-message-form"}}
+          {{>afQuickField name='settings.api.message.payment' type='textarea'}}
+          {{>afQuickField name='settings.api.message.wallet' type='textarea'}}
+          {{>afQuickField name='settings.api.message.shipped' type='textarea'}}
+          {{>afQuickField name='settings.api.message.transfer' type='textarea'}}
+          {{>afQuickField name='settings.api.message.failed' type='textarea'}}
+          {{>afQuickField name='settings.api.message.cancel' type='textarea'}}
+          <button type="submit" class="form-control btn btn-success pull-right">Update</button>
+      {{/autoForm}}
+    </div>
+  </div>
+  <div class="panel panel-default">
+      <div class="panel-heading" data-toggle="collapse" data-target="#emailMessage">
+        <div class="panel-title">Email Message settings</div>
+      </div>
+      <div class="panel-body collapse" id="emailMessage">
+        {{#autoForm collection=Collections.Packages schema=EmailMessagePackageConfig doc=packageData type="update" id="sms-message-form"}}
+            {{>afQuickField name='settings.email.message.payment' type='textarea'}}
+            {{>afQuickField name='settings.email.message.wallet' type='textarea' }}
+            {{>afQuickField name='settings.email.message.shipped' type='textarea' }}
+            {{>afQuickField name='settings.email.message.transfer' type='textarea' }}
+            {{>afQuickField name='settings.email.message.failed' type='textarea' }}
+            {{>afQuickField name='settings.email.message.cancel' type='textarea' }}
+           <button type="submit" class="form-control btn btn-success pull-right">Update</button>
+        {{/autoForm}}
+      </div>
+    </div>
+</template>
+
+<template name="twilioSettings">
+  {{#autoForm collection=Collections.Packages schema=TwilioPackageConfig doc=packageData type="update" id="twilio-update-form"}}
+    {{>afQuickField name='settings.api.twilio.authToken'}}
+    {{>afQuickField name='settings.api.twilio.accSid'}}
+    {{>afQuickField name='settings.api.twilio.phoneNumber'}}
+    <button type="submit" class="form-control btn btn-success pull-right">Update</button>
+  {{/autoForm}}
+</template>
+
+<template name="jusibeSettings">
+  {{#autoForm collection=Collections.Packages schema=JusibePackageConfig doc=packageData type="update" id="jusibe-update-form"}}
+    {{>afQuickField name='settings.api.jusibe.accessToken' placeholder="Access token"}}
+    {{>afQuickField name='settings.api.jusibe.publicKey' placeholder="Public Key"}}
+    {{>afQuickField name='settings.api.jusibe.phoneNumber' placeholder="Shope Name"}}
+    <button type="submit" class="form-control btn btn-success pull-right">Update</button>
+  {{/autoForm}}
+</template>
+
+
+<template name="emailNotificationSettings">
+  {{#autoForm collection=Collections.Packages schema=EmailNotificationPackageConfig doc=packageData type="update" id="email-update-form"}}
+    {{>afQuickField name='settings.email.host' placeholder="host"}}
+    {{>afQuickField name='settings.email.port' placeholder="port"}}
+    {{>afQuickField name='settings.email.user' placeholder="user"}}
+    {{>afQuickField name='settings.email.password' type="password" placeholder="password"}}
+    <button type="submit" class="form-control btn btn-success pull-right">Update</button>
+  {{/autoForm}}
+</template>
