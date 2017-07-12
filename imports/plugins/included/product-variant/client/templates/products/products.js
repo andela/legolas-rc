@@ -5,6 +5,7 @@ import { Products, Tags } from "/lib/collections";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 import { ITEMS_INCREMENT } from "/client/config/defaults";
+import * as Collections from "/lib/collections";
 
 /**
  * loadMoreProducts
@@ -51,6 +52,7 @@ Template.products.onCreated(function () {
   // Update product subscription
   this.autorun(() => {
     const slug = Reaction.Router.getParam("slug");
+    const shopName = Reaction.Router.getParam("shopName");
     const tag = Tags.findOne({ slug: slug }) || Tags.findOne(slug);
     const scrollLimit = Session.get("productScrollLimit");
     let tags = {}; // this could be shop default implementation needed
@@ -76,17 +78,43 @@ Template.products.onCreated(function () {
     // we are caching `currentTag` or if we are not inside tag route, we will
     // use shop name as `base` name for `positions` object
     const currentTag = ReactionProduct.getTag();
-    const productCursor = Products.find({
-      ancestors: []
-      // keep this, as an example
-      // type: { $in: ["simple"] }
-    }, {
-      sort: {
-        [`positions.${currentTag}.position`]: 1,
-        [`positions.${currentTag}.createdAt`]: 1,
-        createdAt: 1
-      }
-    });
+    // const productCursor = Products.find({
+    //   ancestors: []
+    //     // keep this, as an example
+    //     // type: { $in: ["simple"] }
+    // }, {
+    //   sort: {
+    //     [`positions.${currentTag}.position`]: 1,
+    //     [`positions.${currentTag}.createdAt`]: 1,
+    //     createdAt: 1
+    //   }
+    // });
+    if (shopName) {
+      productCursor = Products.find({
+        ancestors: [],
+        reactionVendor: shopName
+          // keep this, as an example
+          // type: { $in: ["simple"] }
+      }, {
+        sort: {
+          [`positions.${currentTag}.position`]: 1,
+          [`positions.${currentTag}.createdAt`]: 1,
+          createdAt: 1
+        }
+      });
+    } else {
+      productCursor = Products.find({
+        ancestors: []
+          // keep this, as an example
+          // type: { $in: ["simple"] }
+      }, {
+        sort: {
+          [`positions.${currentTag}.position`]: 1,
+          [`positions.${currentTag}.createdAt`]: 1,
+          createdAt: 1
+        }
+      });
+    }
 
     const products = productCursor.map((product) => {
       return applyProductRevision(product);

@@ -2,6 +2,8 @@ import { Reaction } from "/client/api";
 import { Packages, Shops } from "/lib/collections";
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
+import { Accounts } from "/lib/collections";
+
 
 const getPermissionMap = (permissions) => {
   const permissionMap = {};
@@ -11,6 +13,18 @@ const getPermissionMap = (permissions) => {
   return permissionMap;
 };
 
+const permissions = [
+  "dashboard",
+  "createProduct",
+  "orders",
+  "dashboard/orders",
+  "reaction-shipping",
+  "shipping",
+  "reaction-orders",
+  "vendor",
+  "reaction-static-pages",
+  "staticPages"
+];
 /**
  * shopMember helpers
  * permissions / roles controls
@@ -25,8 +39,44 @@ Template.member.events({
       data: this,
       template: "memberSettings"
     });
+  },
+
+  "click [data-event-action=activateVendor]": function (event, template) {
+    // we can create the store here using the below, We can try this in the future
+    // Meteor.call("shop/createShop", this.userId, shopObject);
+    const member = template.data;
+    Meteor.call("accounts/addUserPermissions", member.userId, permissions, Reaction.shopId);
+    Meteor.call("vendor/activateVendor", member.userId);
+  },
+
+  "click [data-event-action=deactivateVendor]": function (event, template) {
+    const member = template.data;
+    Meteor.call("accounts/removeUserPermissions", member.userId, permissions, Reaction.shopId);
+    Meteor.call("vendor/deactivateVendor", member.userId);
   }
 });
+
+Template.member.helpers({
+
+  isActiveVendor: function() {
+    let userDetails = Accounts.findOne(this.userId);
+    if (userDetails.profile.vendorDetails) {
+      userDetails = userDetails.profile.vendorDetails[0].shopActive;
+      return userDetails;
+    }
+    return false;
+  },
+  isInactiveVendor: function() {
+    let userDetails = Accounts.findOne(this.userId);
+    if (userDetails.profile.vendorDetails) {
+      userDetails = userDetails.profile.vendorDetails[0].shopActive;
+      if (userDetails === false);
+      return !userDetails;
+    }
+    return false;
+  }
+});
+
 
 Template.memberSettings.helpers({
   isOwnerDisabled: function () {
