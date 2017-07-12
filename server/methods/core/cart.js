@@ -289,7 +289,7 @@ Meteor.methods({
    *  @param {Number} [itemQty] - qty to add to cart
    *  @return {Number|Object} Mongo insert response
    */
-  "cart/addToCart": function (productId, variantId, itemQty, isDigital) {
+  "cart/addToCart": function (productId, variantId, itemQty) {
     check(productId, String);
     check(variantId, String);
     check(itemQty, Match.Optional(Number));
@@ -382,8 +382,6 @@ Meteor.methods({
           title: product.title,
           reactionVendorId: product.reactionVendorId,
           type: product.type
-          isDigital: product.isDigital,
-          downloadUrl: product.downloadUrl
         }
       }
     }, function (error, result) {
@@ -496,7 +494,6 @@ Meteor.methods({
    * don't want to just make another cart item
    * @todo:  Partial order processing, shopId processing
    * @todo:  Review Security on this method
-   * @param {Boolean} isDigital- isDigital or checking for digital product
    * @param {String} cartId - cartId to transform to order
    * @return {String} returns orderId
    */
